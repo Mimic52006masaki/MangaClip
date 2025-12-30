@@ -1,23 +1,24 @@
-import db from './database';
 import { MangaArticle } from './database';
+import db from './database';
 
-export function assignTargetDates(newArticles: Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt' | 'checked'>[]): Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt' | 'checked'>[] {
-  // Get the latest targetDate from DB
-  const latestArticle = db.prepare(`
-    SELECT targetDate FROM manga_articles
-    WHERE targetDate IS NOT NULL
-    ORDER BY targetDate DESC
-    LIMIT 1
-  `).get() as { targetDate: string } | undefined;
+export function assignTargetDates(newArticles: Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt'>[]): Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt'>[] {
+  console.log(`Assigning target dates for ${newArticles.length} articles`);
+
+  // Get the latest targetDate from database
+  const row = db.prepare('SELECT targetDate FROM manga_articles WHERE targetDate IS NOT NULL ORDER BY targetDate DESC LIMIT 1').get() as { targetDate: string } | undefined;
+  const latestTargetDate = row?.targetDate || null;
+  console.log('Latest targetDate from database:', latestTargetDate);
 
   let latestDate: Date;
 
-  if (latestArticle && latestArticle.targetDate) {
-    latestDate = new Date(latestArticle.targetDate);
+  if (latestTargetDate) {
+    latestDate = new Date(latestTargetDate);
+    console.log('Using latest date from storage:', latestDate.toISOString());
   } else {
     // If no articles, start from today 21:00
     latestDate = new Date();
     latestDate.setHours(21, 0, 0, 0);
+    console.log('No articles in storage, starting from today 21:00:', latestDate.toISOString());
   }
 
   // Assign targetDates in reverse order (newest first)

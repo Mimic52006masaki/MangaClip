@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/database';
+import { storage } from '@/lib/storage';
 import JSZip from 'jszip';
 
 export async function GET() {

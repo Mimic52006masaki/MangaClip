@@ -1,14 +1,19 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 
+console.log('Initializing database module');
+
 // Database path
 const dbPath = path.join(process.cwd(), 'mangaclip.db');
+console.log('DB path:', dbPath);
 const db = new Database(dbPath);
+console.log('DB instance created');
 
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
 
 // Create tables
+console.log('Creating tables...');
 db.exec(`
   CREATE TABLE IF NOT EXISTS manga_articles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,6 +34,7 @@ db.exec(`
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `);
+console.log('Tables created successfully');
 
 // Types
 export interface MangaArticle {

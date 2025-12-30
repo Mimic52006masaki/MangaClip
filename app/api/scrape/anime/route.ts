@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { scrapeAnimeArticles } from '@/lib/scraper';
-import db from '@/lib/database';
-import { AnimeArticle } from '@/lib/database';
+import db, { AnimeArticle } from '@/lib/database';
 
 export async function POST() {
   try {

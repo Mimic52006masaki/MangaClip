@@ -1,0 +1,7 @@
+{
+  "/anime/page": "app/anime/page.js",
+  "/api/scrape/anime/route": "app/api/scrape/anime/route.js",
+  "/api/scrape/manga/route": "app/api/scrape/manga/route.js",
+  "/manga/page": "app/manga/page.js",
+  "/page": "app/page.js"
+}

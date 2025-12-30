@@ -22,6 +22,7 @@ export default function MangaTable() {
       const response = await fetch('/api/scrape/manga');
       const data = await response.json();
       if (data.success) {
+        console.log('Fetched articles:', data.articles.length);
         setArticles(data.articles);
       }
     } catch (error) {
@@ -73,6 +74,26 @@ export default function MangaTable() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (!confirm('全ての漫画記事を削除しますか？')) return;
+    try {
+      const response = await fetch('/api/scrape/manga', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ all: true })
+      });
+      const data = await response.json();
+      if (data.success) {
+        await fetchArticles(); // Refresh the list
+        alert(`${data.deleted}件削除しました`);
+      } else {
+        alert('削除失敗: ' + data.error);
+      }
+    } catch (error) {
+      alert('削除失敗');
+    }
+  };
+
   useEffect(() => {
     fetchArticles();
   }, []);
@@ -85,17 +106,27 @@ export default function MangaTable() {
     groups[date].push(article);
     return groups;
   }, {} as Record<string, MangaArticle[]>);
+  console.log('Grouped articles keys:', Object.keys(groupedArticles));
 
+  console.log('Rendering MangaTable');
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">漫画まとめ速報</h2>
-      <button
-        onClick={handleScrape}
-        disabled={loading}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
-      >
-        {loading ? '取得中...' : '記事取得'}
-      </button>
+      <div className="mb-4 space-x-2">
+        <button
+          onClick={handleScrape}
+          disabled={loading}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+        >
+          {loading ? '取得中...' : '記事取得'}
+        </button>
+        <button
+          onClick={handleBulkDelete}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          全記事削除
+        </button>
+      </div>
 
       {Object.keys(groupedArticles).sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).map(date => (
         <div key={date} className="mb-8">
@@ -114,20 +145,30 @@ export default function MangaTable() {
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2">時間</th>
                 <th className="border border-gray-300 px-4 py-2">オリジナルタイトル</th>
+                <th className="border border-gray-300 px-4 py-2">URL</th>
                 <th className="border border-gray-300 px-4 py-2">生成タイトル</th>
                 <th className="border border-gray-300 px-4 py-2">操作</th>
               </tr>
             </thead>
             <tbody>
-              {groupedArticles[date].sort((a, b) => {
-                if (!a.targetDate || !b.targetDate) return 0;
-                return new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime();
-              }).map(article => (
+              {(() => {
+                const sorted = groupedArticles[date].sort((a, b) => {
+                  if (!a.targetDate || !b.targetDate) return 0;
+                  return new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime();
+                });
+                console.log(`Date ${date}: ${sorted.length} articles`);
+                return sorted;
+              })().map(article => (
                 <tr key={article.id}>
                   <td className="border border-gray-300 px-4 py-2">
                     {article.targetDate ? new Date(article.targetDate).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) : ''}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">{article.originalTitle}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                      {article.url}
+                    </a>
+                  </td>
                   <td className="border border-gray-300 px-4 py-2">{article.generatedTitle || article.originalTitle}</td>
                   <td className="border border-gray-300 px-4 py-2">
                     <button

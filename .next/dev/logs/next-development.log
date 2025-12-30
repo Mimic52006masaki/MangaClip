@@ -1,0 +1,680 @@
+[00:00:00.489] Server  LOG     ✓ Ready in 344ms
+[00:00:01.403] Server  ERROR   Error fetching anime articles: ReferenceError: db is not defined
+[00:00:01.466] Server  ERROR   Error fetching manga articles: ReferenceError: db is not defined
+[00:01:36.182] Server  LOG     Initializing database module
+[00:01:36.183] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:01:36.187] Server  LOG     DB instance created
+[00:01:36.189] Server  LOG     Creating tables...
+[00:01:36.190] Server  LOG     Tables created successfully
+[00:01:36.323] Server  LOG     Initializing database module
+[00:01:36.324] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:01:36.324] Server  LOG     DB instance created
+[00:01:36.324] Server  LOG     Creating tables...
+[00:01:36.324] Server  LOG     Tables created successfully
+[00:01:42.279] Server  LOG     Starting manga scrape API
+[00:01:42.399] Server  ERROR   Error scraping manga articles: Error: getaddrinfo ENOTFOUND mangamatomesokuhou.com
+[00:01:42.514] Server  ERROR   Error in manga scrape: Error: Failed to scrape manga articles
+[00:02:38.689] Server  LOG     Initializing database module
+[00:02:38.691] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:02:38.691] Server  LOG     DB instance created
+[00:02:38.692] Server  LOG     Creating tables...
+[00:02:38.692] Server  LOG     Tables created successfully
+[00:02:41.163] Server  LOG     Starting manga scrape API
+[00:02:41.274] Server  ERROR   Error scraping manga articles: Error: getaddrinfo ENOTFOUND mangamatomesokuhou.com
+[00:02:41.315] Server  ERROR   Error in manga scrape: Error: Failed to scrape manga articles
+[00:03:23.165] Server  LOG     Initializing database module
+[00:03:23.166] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:03:23.166] Server  LOG     DB instance created
+[00:03:23.167] Server  LOG     Creating tables...
+[00:03:23.167] Server  LOG     Tables created successfully
+[00:03:23.174] Server  LOG     Starting manga scrape API
+[00:03:23.271] Server  ERROR   Error scraping manga articles: Error: getaddrinfo ENOTFOUND mangamatomesokuhou.com
+[00:03:23.317] Server  ERROR   Error in manga scrape: Error: Failed to scrape manga articles
+[00:03:37.873] Server  LOG     Starting manga scrape API
+[00:03:38.026] Server  ERROR   Error scraping manga articles: Error: getaddrinfo ENOTFOUND mangamatomesokuhou.com
+[00:03:38.073] Server  ERROR   Error in manga scrape: Error: Failed to scrape manga articles
+[00:07:40.586] Server  LOG     Initializing database module
+[00:07:40.588] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:07:40.589] Server  LOG     DB instance created
+[00:07:40.589] Server  LOG     Creating tables...
+[00:07:40.590] Server  LOG     Tables created successfully
+[00:07:40.604] Server  LOG     Starting manga scrape API
+[00:07:40.838] Server  LOG     Scraped articles: 0
+[00:07:40.838] Server  LOG     Existing URLs count: 0
+[00:07:40.838] Server  LOG     New articles after dedup: 0
+[00:08:00.312] Server  LOG     Initializing database module
+[00:08:00.313] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:08:00.313] Server  LOG     DB instance created
+[00:08:00.314] Server  LOG     Creating tables...
+[00:08:00.314] Server  LOG     Tables created successfully
+[00:08:00.433] Server  LOG     Initializing database module
+[00:08:00.433] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:08:00.434] Server  LOG     DB instance created
+[00:08:00.434] Server  LOG     Creating tables...
+[00:08:00.434] Server  LOG     Tables created successfully
+[00:08:02.326] Server  LOG     Starting manga scrape API
+[00:08:02.514] Server  LOG     Scraped articles: 0
+[00:08:02.514] Server  LOG     Existing URLs count: 0
+[00:08:02.514] Server  LOG     New articles after dedup: 0
+[00:08:12.144] Server  LOG     Starting manga scrape API
+[00:08:12.326] Server  LOG     Scraped articles: 0
+[00:08:12.326] Server  LOG     Existing URLs count: 0
+[00:08:12.326] Server  LOG     New articles after dedup: 0
+[00:09:59.094] Server  LOG     Initializing database module
+[00:09:59.095] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:09:59.096] Server  LOG     DB instance created
+[00:09:59.096] Server  LOG     Creating tables...
+[00:09:59.096] Server  LOG     Tables created successfully
+[00:09:59.100] Server  LOG     Starting manga scrape API
+[00:09:59.483] Server  LOG     Scraped articles: 0
+[00:09:59.483] Server  LOG     Existing URLs count: 0
+[00:09:59.484] Server  LOG     New articles after dedup: 0
+[00:10:08.607] Server  LOG     Initializing database module
+[00:10:08.608] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:10:08.608] Server  LOG     DB instance created
+[00:10:08.609] Server  LOG     Creating tables...
+[00:10:08.609] Server  LOG     Tables created successfully
+[00:10:10.713] Server  LOG     Starting manga scrape API
+[00:10:10.976] Server  LOG     Scraped articles: 0
+[00:10:10.976] Server  LOG     Existing URLs count: 0
+[00:10:10.976] Server  LOG     New articles after dedup: 0
+[00:10:17.952] Server  LOG     Starting manga scrape API
+[00:10:18.226] Server  LOG     Scraped articles: 0
+[00:10:18.226] Server  LOG     Existing URLs count: 0
+[00:10:18.226] Server  LOG     New articles after dedup: 0
+[00:13:21.624] Server  LOG     Initializing database module
+[00:13:21.625] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:13:21.626] Server  LOG     DB instance created
+[00:13:21.626] Server  LOG     Creating tables...
+[00:13:21.626] Server  LOG     Tables created successfully
+[00:13:21.631] Server  LOG     Starting manga scrape API
+[00:13:21.993] Server  LOG     Scraped articles: 0
+[00:13:21.993] Server  LOG     Existing URLs count: 0
+[00:13:21.993] Server  LOG     New articles after dedup: 0
+[00:13:33.252] Server  LOG     Starting manga scrape API
+[00:13:33.522] Server  LOG     Scraped articles: 0
+[00:13:33.522] Server  LOG     Existing URLs count: 0
+[00:13:33.522] Server  LOG     New articles after dedup: 0
+[00:15:03.321] Server  LOG     Initializing database module
+[00:15:03.322] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:15:03.325] Server  LOG     DB instance created
+[00:15:03.325] Server  LOG     Creating tables...
+[00:15:03.325] Server  LOG     Tables created successfully
+[00:15:03.331] Server  LOG     Starting manga scrape API
+[00:15:03.590] Server  LOG     Scraped articles: 83
+[00:15:03.591] Server  LOG     Existing URLs count: 0
+[00:15:03.591] Server  LOG     New articles after dedup: 83
+[00:15:03.591] Server  LOG     Assigning target dates
+[00:15:03.591] Server  LOG     Assigning target dates for 83 articles
+[00:15:03.591] Server  LOG     Latest targetDate from database: null
+[00:15:03.591] Server  LOG     No articles in storage, starting from today 21:00: "2025-12-30T12:00:00.000Z"
+[00:15:03.592] Server  LOG     Target dates assigned, count: 83
+[00:15:03.592] Server  LOG     Inserting article: "攻殻機動隊とかいうアニメ見てるんやが…😅"
+[00:15:03.593] Server  LOG     Inserting article: "【朗報】野原ひろし対偽ひろしの漫画が熱すぎると話題に"
+[00:15:03.593] Server  LOG     Inserting article: "【悲報】エロ同人作家さん、リベラルな漫画を描いてしまう"
+[00:15:03.593] Server  LOG     Inserting article: "【悲報】D.Gray-manのリナリーさん、セクハラされてしまう"
+[00:15:03.593] Server  LOG     Inserting article: "【悲報】今年のコミケ、またブルアカに侵食される"
+[00:15:03.594] Server  LOG     Inserting article: "コミケ、コミケの商標の使用について表明"
+[00:15:03.594] Server  LOG     Inserting article: "タフと彼岸島はなんJでネタにされるのに聖闘士星矢はネタにされないのはなんで？"
+[00:15:03.594] Server  LOG     Inserting article: "ゆるキャン△、なぜ流行ったのか謎www"
+[00:15:03.594] Server  LOG     Inserting article: "迷い猫オーバーランとかいうアニメあったでしょ"
+[00:15:03.594] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデル「私は殺された」"
+[00:15:03.594] Server  LOG     Inserting article: "少年誌のラブコメ漫画、「もう女に任せよう」という機運が高まるwwww"
+[00:15:03.594] Server  LOG     Inserting article: "【速報】機動戦艦ナデシコ劇場版、地上波初放送wwwww"
+[00:15:03.594] Server  LOG     Inserting article: "弱虫ペダル(97)←これwwwwwwww"
+[00:15:03.595] Server  LOG     Inserting article: "【速報】アニメ「僕だけがいない街」面白すぎるwww"
+[00:15:03.595] Server  LOG     Inserting article: "【朗報】可愛すぎる黒人キャラクターが海外で大バズりする"
+[00:15:03.595] Server  LOG     Inserting article: "ベルセルク「アシスタントで続けます」ワイ「ほーん、そろそろゴッドハンド1人くらい倒したか？」"
+[00:15:03.595] Server  LOG     Inserting article: "インフィニット・ストラトスとかいう人気美少女動物園アニメwww"
+[00:15:03.596] Server  LOG     Inserting article: "鋼の錬金術師エド「チートを使ってレベル100！😤」周りの人たち「こつこつ地道にレベル100！🤌\ud83d"
+[00:15:03.596] Server  LOG     Inserting article: "【悲報】クロロ=ルシルフルさん(26)、カッコつけてちょっと煽ったら思ったよりボコられてしまう"
+[00:15:03.596] Server  LOG     Inserting article: "ベジータさん、ようやく超サイヤ人になれたのに人造人間18号にボコボコにされる"
+[00:15:03.597] Server  LOG     Inserting article: "作者が死んだのに、走らされてる作品→1位ちびまる子ちやん、2位ドラゴボ、3位孤独のグルメ"
+[00:15:03.597] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデルを助けるクラウドファンディング、開始即中止"
+[00:15:03.597] Server  LOG     Inserting article: "【悲報】芥見下々(呪術作者)、アンチ高市だった"
+[00:15:03.597] Server  LOG     Inserting article: "【動画】トリコでのスパゲティの麺の作成風景、こんな感じで作られてワイらのもとに届くんやな😳"
+[00:15:03.597] Server  LOG     Inserting article: "【画像】めしぬま、だいぶ絵が綺麗になってると話題に"
+[00:15:03.598] Server  LOG     Inserting article: "【画像】NHKさん、正月アニメに本気を出してしまう…"
+[00:15:03.598] Server  LOG     Inserting article: "シャーマンキングの作者、侍の幽霊と少年のバトル漫画をコロコロで連載開始wwww"
+[00:15:03.598] Server  LOG     Inserting article: "【悲報】ウマ娘の新キャラ、不人気確定の緑髪で逝く"
+[00:15:03.598] Server  LOG     Inserting article: "はじめの一歩の作者、休み過ぎな事をファンに咎められてめっちゃ効いてしまう"
+[00:15:03.598] Server  LOG     Inserting article: "ぼっちちゃんの通学経路、ヤバすぎるwww"
+[00:15:03.598] Server  LOG     Inserting article: "【悲報】フリーレン、極右だった"
+[00:15:03.598] Server  LOG     Inserting article: "ワイ、あさひなぐという漫画を読んで号泣"
+[00:15:03.598] Server  LOG     Inserting article: "【画像】ガンダムエース最新号の表紙、ガチでヤバいwww"
+[00:15:03.599] Server  LOG     Inserting article: "【訃報】漫画家の魚喃キリコさん(52)死去"
+[00:15:03.599] Server  LOG     Inserting article: "「ごちうさ」新作アニメ、長編劇場版に！制作会社＆キャラデザが変更へ"
+[00:15:03.599] Server  LOG     Inserting article: "【悲報】台湾の無差別殺人犯、アニ豚だった…台湾でアニメボイコット運動が加熱"
+[00:15:03.599] Server  LOG     Inserting article: "【悲報】奥浩哉さん、とんでもないホモ漫画を連載開始"
+[00:15:03.599] Server  LOG     Inserting article: "【朗報】呪術廻戦の五条先生、宿儺に完全勝利"
+[00:15:03.599] Server  LOG     Inserting article: "【画像】イリヤの新作フィギュア、やばい"
+[00:15:03.599] Server  LOG     Inserting article: "【悲報】ラサール石井さん、こち亀にお気持ち表明"
+[00:15:03.600] Server  LOG     Inserting article: "【画像】「君のことが大大大大大好きな100人の彼女」のヒロインがアジアンメイド風衣装で登場！"
+[00:15:03.600] Server  LOG     Inserting article: "【速報】漫画版の化物語、とてつもなく面白い"
+[00:15:03.600] Server  LOG     Inserting article: "【悲報】ワンパンマン村田(日本の漫画家で一番絵が上手い)←叩かれる理由"
+[00:15:03.600] Server  LOG     Inserting article: "【悲報】黒崎一護さん、ラインを越えてしまう…"
+[00:15:03.600] Server  LOG     Inserting article: "【悲報】釘崎野薔薇ちゃん、呪術廻戦のキャラの中でも明らかに弱すぎる…"
+[00:15:03.600] Server  LOG     Inserting article: "アニメ化してほしいマンガランキング、2026本投票開始！過去には『SPY×FAMILY』や『薬屋』が"
+[00:15:03.601] Server  LOG     Inserting article: "ワンダンス、最終回なのに誰も見ていない"
+[00:15:03.601] Server  LOG     Inserting article: "【悲報】ウマ娘とココスのコラボ、1人を除いて全員弱男特効メンツだと話題に"
+[00:15:03.601] Server  LOG     Inserting article: "弱虫ペダル最新話の今泉くん、あまりにも情けなさすぎて終わる"
+[00:15:03.601] Server  LOG     Inserting article: "マーベル最新作『アベンジャーズ/ドゥームズデイ』の予告編、YouTubeで公開"
+[00:15:03.601] Server  LOG     Inserting article: "【悲報】キングダム、「結果に向けて矢を撃つ」敵が現れて終わる"
+[00:15:03.601] Server  LOG     Inserting article: "【朗報】機動戦士ガンダムサンダーボルト、完結記念に229話無料"
+[00:15:03.601] Server  LOG     Inserting article: "【朗報】ヒロアカで1番エロい女、決まる"
+[00:15:03.602] Server  LOG     Inserting article: "【悲報】呪術廻戦公式さん、呪術のパクりゲーにお気持ち表明"
+[00:15:03.602] Server  LOG     Inserting article: "【悲報】セブンレのちいかわケーキ、限界突破する"
+[00:15:03.602] Server  LOG     Inserting article: "【キングダム】弓兄弟の弟、死亡"
+[00:15:03.602] Server  LOG     Inserting article: "【悲報】海外の造形師、クオリティの高いウマ娘のフィギュアを作るもまったく売れず絶望"
+[00:15:03.602] Server  LOG     Inserting article: "【悲報】ハンターハンター監督「1話からカイト消します！」←これ"
+[00:15:03.602] Server  LOG     Inserting article: "ヤンマガで下品なフリーレンが連載中www"
+[00:15:03.602] Server  LOG     Inserting article: "【画像】週刊少年マガジン、性欲作品だらけになる"
+[00:15:03.603] Server  LOG     Inserting article: "【画像あり】神アニメの円盤が届いた"
+[00:15:03.603] Server  LOG     Inserting article: "【悲報】ワンピースのボア・ハンコック(31)、尾田先生の扱いが悪すぎるwww"
+[00:15:03.603] Server  LOG     Inserting article: "はじめの一歩、しばらく休載に…"
+[00:15:03.603] Server  LOG     Inserting article: "松屋ちいかわコラボ、鬼辛カレーを食べないとグッズ貰えず女さん阿鼻叫喚"
+[00:15:03.603] Server  LOG     Inserting article: "【速報】ライアーゲーム続編、連載決定www"
+[00:15:03.603] Server  LOG     Inserting article: "【悲報】庵野秀明「今の日本は子供向けアニメが少なすぎる！！もっと子供向け番組を増やせ！！」"
+[00:15:03.604] Server  LOG     Inserting article: "【画像】江戸ちいかわ、ハゲたおっさんみたいになる"
+[00:15:03.604] Server  LOG     Inserting article: "【悲報】葬送のフリーレン、今年は7話連載でフィニッシュ"
+[00:15:03.604] Server  LOG     Inserting article: "【謎】ドラゴンボールの新作ソシャゲ、何かがおかしい…"
+[00:15:03.604] Server  LOG     Inserting article: "天上院明日香とかいう遊戯王史上最高のシコ性能を持つヒロイン"
+[00:15:03.604] Server  LOG     Inserting article: "後藤ひとり「高校では同じ学校の人と一緒になりたくない……せや！東京まで行ったろ！」←これ"
+[00:15:03.605] Server  LOG     Inserting article: "【急募】MAJOR 2ndをこれからMAJOR並みに面白くする方法"
+[00:15:03.605] Server  LOG     Inserting article: "ラオウ「くどい！誰を愛そうがどんなに汚れようが最後にこのラオウの横におればよい！」"
+[00:15:03.605] Server  LOG     Inserting article: "【画像】彡(^)(^)「草　ヤムチャが天下一武道会1回戦突破するぐらいありえねぇだろ」"
+[00:15:03.605] Server  LOG     Inserting article: "【画像】花の慶次とかいう漫画の名言、現代人に刺さり過ぎる"
+[00:15:03.605] Server  LOG     Inserting article: "ワンピース、Xで炎上wwwwwwwww"
+[00:15:03.605] Server  LOG     Inserting article: "【悲報】漫画家さん、暴投で盗塁してしまう"
+[00:15:03.606] Server  LOG     Inserting article: "【悲報】ラサール石井さん、唯一のアイデンティティである両津を失う"
+[00:15:03.606] Server  LOG     Inserting article: "【速報】実写版ワンピースのチョッパー編、ガチで再現度が高すぎる"
+[00:15:03.606] Server  LOG     Inserting article: "アニメらんま1/2、2期話題にならず終了"
+[00:15:03.606] Server  LOG     Inserting article: "【タフ】タフ君が食べてる『タフ丼』、ヤバい"
+[00:15:03.606] Server  LOG     Inserting article: "【朗報】名作アニメ「地獄楽」がYouTubeにて一挙公開wwww"
+[00:15:03.606] Server  LOG     Inserting article: "アトリエのソシャゲ、えっちなキャラがたくさんいる"
+[00:15:03.606] Server  LOG     Manga scrape completed successfully
+[00:15:22.192] Server  LOG     Initializing database module
+[00:15:22.193] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:15:22.193] Server  LOG     DB instance created
+[00:15:22.193] Server  LOG     Creating tables...
+[00:15:22.193] Server  LOG     Tables created successfully
+[00:15:22.331] Server  LOG     Initializing database module
+[00:15:22.332] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:15:22.332] Server  LOG     DB instance created
+[00:15:22.332] Server  LOG     Creating tables...
+[00:15:22.332] Server  LOG     Tables created successfully
+[00:19:28.916] Server  LOG     ✓ Compiled in 29ms
+[00:19:35.752] Server  LOG     ✓ Compiled in 5ms
+[00:19:47.519] Server  LOG     Initializing database module
+[00:19:47.523] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:19:47.525] Server  LOG     DB instance created
+[00:19:47.526] Server  LOG     Creating tables...
+[00:19:47.526] Server  LOG     Tables created successfully
+[00:21:04.531] Server  LOG     ✓ Compiled in 25ms
+[00:21:13.133] Server  LOG     ✓ Compiled in 20ms
+[00:21:57.987] Server  LOG     Starting manga scrape API
+[00:21:58.362] Server  LOG     Scraped articles: 83
+[00:21:58.362] Server  LOG     Existing URLs count: 0
+[00:21:58.362] Server  LOG     New articles after dedup: 83
+[00:21:58.362] Server  LOG     Assigning target dates
+[00:21:58.362] Server  LOG     Assigning target dates for 83 articles
+[00:21:58.363] Server  LOG     Latest targetDate from database: null
+[00:21:58.363] Server  LOG     No articles in storage, starting from today 21:00: "2025-12-30T12:00:00.000Z"
+[00:21:58.363] Server  LOG     Target dates assigned, count: 83
+[00:21:58.363] Server  LOG     Inserting article: "攻殻機動隊とかいうアニメ見てるんやが…😅"
+[00:21:58.364] Server  LOG     Inserting article: "【朗報】野原ひろし対偽ひろしの漫画が熱すぎると話題に"
+[00:21:58.364] Server  LOG     Inserting article: "【悲報】エロ同人作家さん、リベラルな漫画を描いてしまう"
+[00:21:58.364] Server  LOG     Inserting article: "【悲報】D.Gray-manのリナリーさん、セクハラされてしまう"
+[00:21:58.364] Server  LOG     Inserting article: "【悲報】今年のコミケ、またブルアカに侵食される"
+[00:21:58.365] Server  LOG     Inserting article: "コミケ、コミケの商標の使用について表明"
+[00:21:58.365] Server  LOG     Inserting article: "タフと彼岸島はなんJでネタにされるのに聖闘士星矢はネタにされないのはなんで？"
+[00:21:58.365] Server  LOG     Inserting article: "ゆるキャン△、なぜ流行ったのか謎www"
+[00:21:58.365] Server  LOG     Inserting article: "迷い猫オーバーランとかいうアニメあったでしょ"
+[00:21:58.365] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデル「私は殺された」"
+[00:21:58.365] Server  LOG     Inserting article: "少年誌のラブコメ漫画、「もう女に任せよう」という機運が高まるwwww"
+[00:21:58.366] Server  LOG     Inserting article: "【速報】機動戦艦ナデシコ劇場版、地上波初放送wwwww"
+[00:21:58.366] Server  LOG     Inserting article: "弱虫ペダル(97)←これwwwwwwww"
+[00:21:58.366] Server  LOG     Inserting article: "【速報】アニメ「僕だけがいない街」面白すぎるwww"
+[00:21:58.366] Server  LOG     Inserting article: "【朗報】可愛すぎる黒人キャラクターが海外で大バズりする"
+[00:21:58.366] Server  LOG     Inserting article: "ベルセルク「アシスタントで続けます」ワイ「ほーん、そろそろゴッドハンド1人くらい倒したか？」"
+[00:21:58.366] Server  LOG     Inserting article: "インフィニット・ストラトスとかいう人気美少女動物園アニメwww"
+[00:21:58.367] Server  LOG     Inserting article: "鋼の錬金術師エド「チートを使ってレベル100！😤」周りの人たち「こつこつ地道にレベル100！🤌\ud83d"
+[00:21:58.367] Server  LOG     Inserting article: "【悲報】クロロ=ルシルフルさん(26)、カッコつけてちょっと煽ったら思ったよりボコられてしまう"
+[00:21:58.367] Server  LOG     Inserting article: "ベジータさん、ようやく超サイヤ人になれたのに人造人間18号にボコボコにされる"
+[00:21:58.367] Server  LOG     Inserting article: "作者が死んだのに、走らされてる作品→1位ちびまる子ちやん、2位ドラゴボ、3位孤独のグルメ"
+[00:21:58.367] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデルを助けるクラウドファンディング、開始即中止"
+[00:21:58.367] Server  LOG     Inserting article: "【悲報】芥見下々(呪術作者)、アンチ高市だった"
+[00:21:58.367] Server  LOG     Inserting article: "【動画】トリコでのスパゲティの麺の作成風景、こんな感じで作られてワイらのもとに届くんやな😳"
+[00:21:58.368] Server  LOG     Inserting article: "【画像】めしぬま、だいぶ絵が綺麗になってると話題に"
+[00:21:58.368] Server  LOG     Inserting article: "【画像】NHKさん、正月アニメに本気を出してしまう…"
+[00:21:58.368] Server  LOG     Inserting article: "シャーマンキングの作者、侍の幽霊と少年のバトル漫画をコロコロで連載開始wwww"
+[00:21:58.368] Server  LOG     Inserting article: "【悲報】ウマ娘の新キャラ、不人気確定の緑髪で逝く"
+[00:21:58.368] Server  LOG     Inserting article: "はじめの一歩の作者、休み過ぎな事をファンに咎められてめっちゃ効いてしまう"
+[00:21:58.368] Server  LOG     Inserting article: "ぼっちちゃんの通学経路、ヤバすぎるwww"
+[00:21:58.369] Server  LOG     Inserting article: "【悲報】フリーレン、極右だった"
+[00:21:58.369] Server  LOG     Inserting article: "ワイ、あさひなぐという漫画を読んで号泣"
+[00:21:58.369] Server  LOG     Inserting article: "【画像】ガンダムエース最新号の表紙、ガチでヤバいwww"
+[00:21:58.369] Server  LOG     Inserting article: "【訃報】漫画家の魚喃キリコさん(52)死去"
+[00:21:58.369] Server  LOG     Inserting article: "「ごちうさ」新作アニメ、長編劇場版に！制作会社＆キャラデザが変更へ"
+[00:21:58.369] Server  LOG     Inserting article: "【悲報】台湾の無差別殺人犯、アニ豚だった…台湾でアニメボイコット運動が加熱"
+[00:21:58.369] Server  LOG     Inserting article: "【悲報】奥浩哉さん、とんでもないホモ漫画を連載開始"
+[00:21:58.369] Server  LOG     Inserting article: "【朗報】呪術廻戦の五条先生、宿儺に完全勝利"
+[00:21:58.370] Server  LOG     Inserting article: "【画像】イリヤの新作フィギュア、やばい"
+[00:21:58.370] Server  LOG     Inserting article: "【悲報】ラサール石井さん、こち亀にお気持ち表明"
+[00:21:58.370] Server  LOG     Inserting article: "【画像】「君のことが大大大大大好きな100人の彼女」のヒロインがアジアンメイド風衣装で登場！"
+[00:21:58.370] Server  LOG     Inserting article: "【速報】漫画版の化物語、とてつもなく面白い"
+[00:21:58.370] Server  LOG     Inserting article: "【悲報】ワンパンマン村田(日本の漫画家で一番絵が上手い)←叩かれる理由"
+[00:21:58.370] Server  LOG     Inserting article: "【悲報】黒崎一護さん、ラインを越えてしまう…"
+[00:21:58.370] Server  LOG     Inserting article: "【悲報】釘崎野薔薇ちゃん、呪術廻戦のキャラの中でも明らかに弱すぎる…"
+[00:21:58.371] Server  LOG     Inserting article: "アニメ化してほしいマンガランキング、2026本投票開始！過去には『SPY×FAMILY』や『薬屋』が"
+[00:21:58.371] Server  LOG     Inserting article: "ワンダンス、最終回なのに誰も見ていない"
+[00:21:58.371] Server  LOG     Inserting article: "【悲報】ウマ娘とココスのコラボ、1人を除いて全員弱男特効メンツだと話題に"
+[00:21:58.371] Server  LOG     Inserting article: "弱虫ペダル最新話の今泉くん、あまりにも情けなさすぎて終わる"
+[00:21:58.371] Server  LOG     Inserting article: "マーベル最新作『アベンジャーズ/ドゥームズデイ』の予告編、YouTubeで公開"
+[00:21:58.371] Server  LOG     Inserting article: "【悲報】キングダム、「結果に向けて矢を撃つ」敵が現れて終わる"
+[00:21:58.372] Server  LOG     Inserting article: "【朗報】機動戦士ガンダムサンダーボルト、完結記念に229話無料"
+[00:21:58.372] Server  LOG     Inserting article: "【朗報】ヒロアカで1番エロい女、決まる"
+[00:21:58.373] Server  LOG     Inserting article: "【悲報】呪術廻戦公式さん、呪術のパクりゲーにお気持ち表明"
+[00:21:58.373] Server  LOG     Inserting article: "【悲報】セブンレのちいかわケーキ、限界突破する"
+[00:21:58.373] Server  LOG     Inserting article: "【キングダム】弓兄弟の弟、死亡"
+[00:21:58.373] Server  LOG     Inserting article: "【悲報】海外の造形師、クオリティの高いウマ娘のフィギュアを作るもまったく売れず絶望"
+[00:21:58.373] Server  LOG     Inserting article: "【悲報】ハンターハンター監督「1話からカイト消します！」←これ"
+[00:21:58.373] Server  LOG     Inserting article: "ヤンマガで下品なフリーレンが連載中www"
+[00:21:58.373] Server  LOG     Inserting article: "【画像】週刊少年マガジン、性欲作品だらけになる"
+[00:21:58.374] Server  LOG     Inserting article: "【画像あり】神アニメの円盤が届いた"
+[00:21:58.374] Server  LOG     Inserting article: "【悲報】ワンピースのボア・ハンコック(31)、尾田先生の扱いが悪すぎるwww"
+[00:21:58.374] Server  LOG     Inserting article: "はじめの一歩、しばらく休載に…"
+[00:21:58.374] Server  LOG     Inserting article: "松屋ちいかわコラボ、鬼辛カレーを食べないとグッズ貰えず女さん阿鼻叫喚"
+[00:21:58.374] Server  LOG     Inserting article: "【速報】ライアーゲーム続編、連載決定www"
+[00:21:58.374] Server  LOG     Inserting article: "【悲報】庵野秀明「今の日本は子供向けアニメが少なすぎる！！もっと子供向け番組を増やせ！！」"
+[00:21:58.375] Server  LOG     Inserting article: "【画像】江戸ちいかわ、ハゲたおっさんみたいになる"
+[00:21:58.375] Server  LOG     Inserting article: "【悲報】葬送のフリーレン、今年は7話連載でフィニッシュ"
+[00:21:58.375] Server  LOG     Inserting article: "【謎】ドラゴンボールの新作ソシャゲ、何かがおかしい…"
+[00:21:58.375] Server  LOG     Inserting article: "天上院明日香とかいう遊戯王史上最高のシコ性能を持つヒロイン"
+[00:21:58.375] Server  LOG     Inserting article: "後藤ひとり「高校では同じ学校の人と一緒になりたくない……せや！東京まで行ったろ！」←これ"
+[00:21:58.375] Server  LOG     Inserting article: "【急募】MAJOR 2ndをこれからMAJOR並みに面白くする方法"
+[00:21:58.376] Server  LOG     Inserting article: "ラオウ「くどい！誰を愛そうがどんなに汚れようが最後にこのラオウの横におればよい！」"
+[00:21:58.376] Server  LOG     Inserting article: "【画像】彡(^)(^)「草　ヤムチャが天下一武道会1回戦突破するぐらいありえねぇだろ」"
+[00:21:58.376] Server  LOG     Inserting article: "【画像】花の慶次とかいう漫画の名言、現代人に刺さり過ぎる"
+[00:21:58.376] Server  LOG     Inserting article: "ワンピース、Xで炎上wwwwwwwww"
+[00:21:58.376] Server  LOG     Inserting article: "【悲報】漫画家さん、暴投で盗塁してしまう"
+[00:21:58.376] Server  LOG     Inserting article: "【悲報】ラサール石井さん、唯一のアイデンティティである両津を失う"
+[00:21:58.376] Server  LOG     Inserting article: "【速報】実写版ワンピースのチョッパー編、ガチで再現度が高すぎる"
+[00:21:58.377] Server  LOG     Inserting article: "アニメらんま1/2、2期話題にならず終了"
+[00:21:58.377] Server  LOG     Inserting article: "【タフ】タフ君が食べてる『タフ丼』、ヤバい"
+[00:21:58.377] Server  LOG     Inserting article: "【朗報】名作アニメ「地獄楽」がYouTubeにて一挙公開wwww"
+[00:21:58.377] Server  LOG     Inserting article: "アトリエのソシャゲ、えっちなキャラがたくさんいる"
+[00:21:58.377] Server  LOG     Manga scrape completed successfully
+[00:22:16.191] Server  LOG     Starting manga scrape API
+[00:22:16.449] Server  LOG     Scraped articles: 83
+[00:22:16.449] Server  LOG     Existing URLs count: 83
+[00:22:16.450] Server  LOG     New articles after dedup: 0
+[00:22:30.781] Server  LOG     Starting manga scrape API
+[00:22:31.035] Server  LOG     Scraped articles: 83
+[00:22:31.036] Server  LOG     Existing URLs count: 83
+[00:22:31.036] Server  LOG     New articles after dedup: 0
+[00:23:16.269] Server  LOG     ✓ Compiled in 60ms
+[00:23:30.241] Server  LOG     ✓ Compiled in 15ms
+[00:23:30.369] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:23:30.369] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:01.538] Server  LOG     Grouped articles keys: []
+[00:24:01.978] Server  LOG     Initializing database module
+[00:24:01.978] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[00:24:01.979] Server  LOG     DB instance created
+[00:24:01.979] Server  LOG     Creating tables...
+[00:24:01.979] Server  LOG     Tables created successfully
+[00:24:01.983] Server  LOG     Articles count: 83
+[00:24:01.983] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:24:01.990] Browser LOG     Grouped articles keys: []
+[00:24:01.991] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[00:24:02.110] Browser LOG     Fetched articles: 83
+[00:24:02.110] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:02.110] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:04.742] Server  LOG     Starting manga scrape API
+[00:24:04.871] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:04.871] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:05.028] Server  LOG     Scraped articles: 83
+[00:24:05.028] Server  LOG     Existing URLs count: 83
+[00:24:05.028] Server  LOG     New articles after dedup: 0
+[00:24:05.037] Server  LOG     Articles count: 83
+[00:24:05.037] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:24:05.167] Browser LOG     Fetched articles: 83
+[00:24:05.167] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:05.167] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:56.029] Server  LOG     ✓ Compiled in 30ms
+[00:24:56.210] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:56.210] Browser LOG     Date 2025/12/30: 14 articles
+[00:24:56.210] Browser LOG     Date 2025/12/29: 15 articles
+[00:24:56.210] Browser LOG     Date 2025/12/28: 15 articles
+[00:24:56.210] Browser LOG     Date 2025/12/27: 15 articles
+[00:24:56.210] Browser LOG     Date 2025/12/26: 15 articles
+[00:24:56.210] Browser LOG     Date 2025/12/25: 9 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:24:56.210] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:25:08.515] Server  LOG     Grouped articles keys: []
+[00:25:08.797] Server  LOG     Articles count: 83
+[00:25:08.797] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:25:08.980] Browser LOG     Grouped articles keys: []
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[00:25:08.980] Browser LOG     Fetched articles: 83
+[00:25:08.980] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:08.980] Browser LOG     Date 2025/12/30: 14 articles
+[00:25:08.980] Browser LOG     Date 2025/12/29: 15 articles
+[00:25:08.980] Browser LOG     Date 2025/12/28: 15 articles
+[00:25:08.980] Browser LOG     Date 2025/12/27: 15 articles
+[00:25:08.980] Browser LOG     Date 2025/12/26: 15 articles
+[00:25:08.980] Browser LOG     Date 2025/12/25: 9 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:25:08.980] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:25:12.242] Server  LOG     Starting manga scrape API
+[00:25:12.407] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:12.407] Browser LOG     Date 2025/12/30: 14 articles
+[00:25:12.407] Browser LOG     Date 2025/12/29: 15 articles
+[00:25:12.407] Browser LOG     Date 2025/12/28: 15 articles
+[00:25:12.407] Browser LOG     Date 2025/12/27: 15 articles
+[00:25:12.407] Browser LOG     Date 2025/12/26: 15 articles
+[00:25:12.407] Browser LOG     Date 2025/12/25: 9 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:25:12.407] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:25:12.508] Server  LOG     Scraped articles: 83
+[00:25:12.508] Server  LOG     Existing URLs count: 83
+[00:25:12.508] Server  LOG     New articles after dedup: 0
+[00:25:12.515] Server  LOG     Articles count: 83
+[00:25:12.515] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:25:12.668] Browser LOG     Fetched articles: 83
+[00:25:12.668] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:12.668] Browser LOG     Date 2025/12/30: 14 articles
+[00:25:12.668] Browser LOG     Date 2025/12/29: 15 articles
+[00:25:12.668] Browser LOG     Date 2025/12/28: 15 articles
+[00:25:12.668] Browser LOG     Date 2025/12/27: 15 articles
+[00:25:12.668] Browser LOG     Date 2025/12/26: 15 articles
+[00:25:12.668] Browser LOG     Date 2025/12/25: 9 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:25:12.668] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:26:20.058] Server  LOG     ✓ Compiled in 33ms
+[00:26:20.226] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:20.226] Browser LOG     Rendering MangaTable
+[00:26:20.226] Browser LOG     Date 2025/12/30: 14 articles
+[00:26:20.226] Browser LOG     Date 2025/12/29: 15 articles
+[00:26:20.226] Browser LOG     Date 2025/12/28: 15 articles
+[00:26:20.226] Browser LOG     Date 2025/12/27: 15 articles
+[00:26:20.226] Browser LOG     Date 2025/12/26: 15 articles
+[00:26:20.226] Browser LOG     Date 2025/12/25: 9 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:26:20.226] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:26:33.581] Server  LOG     Grouped articles keys: []
+[00:26:33.582] Server  LOG     Rendering MangaTable
+[00:26:33.877] Server  LOG     Articles count: 83
+[00:26:33.878] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:26:34.062] Browser LOG     Grouped articles keys: []
+[00:26:34.062] Browser LOG     Rendering MangaTable
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:34.062] Browser LOG     Fetched articles: 83
+[00:26:34.062] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:34.062] Browser LOG     Rendering MangaTable
+[00:26:34.062] Browser LOG     Date 2025/12/30: 14 articles
+[00:26:34.062] Browser LOG     Date 2025/12/29: 15 articles
+[00:26:34.062] Browser LOG     Date 2025/12/28: 15 articles
+[00:26:34.062] Browser LOG     Date 2025/12/27: 15 articles
+[00:26:34.062] Browser LOG     Date 2025/12/26: 15 articles
+[00:26:34.062] Browser LOG     Date 2025/12/25: 9 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:26:34.062] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[00:26:38.576] Server  LOG     Articles count: 0
+[00:26:38.578] Server  LOG     First article targetDate: undefined
+[00:26:40.117] Browser LOG     Fetched articles: 0
+[00:26:40.117] Browser LOG     Grouped articles keys: []
+[00:26:40.117] Browser LOG     Rendering MangaTable
+[00:26:40.117] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[00:26:40.117] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:42.702] Server  LOG     Starting manga scrape API
+[00:26:42.785] Browser LOG     Grouped articles keys: []
+[00:26:42.785] Browser LOG     Rendering MangaTable
+[00:26:42.785] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[00:26:42.785] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:42.971] Server  LOG     Scraped articles: 83
+[00:26:42.971] Server  LOG     Existing URLs count: 0
+[00:26:42.971] Server  LOG     New articles after dedup: 83
+[00:26:42.971] Server  LOG     Assigning target dates
+[00:26:42.972] Server  LOG     Assigning target dates for 83 articles
+[00:26:42.972] Server  LOG     Latest targetDate from database: null
+[00:26:42.972] Server  LOG     No articles in storage, starting from today 21:00: "2025-12-30T12:00:00.000Z"
+[00:26:42.972] Server  LOG     Target dates assigned, count: 83
+[00:26:42.973] Server  LOG     Inserting article: "攻殻機動隊とかいうアニメ見てるんやが…😅"
+[00:26:42.973] Server  LOG     Inserting article: "【朗報】野原ひろし対偽ひろしの漫画が熱すぎると話題に"
+[00:26:42.973] Server  LOG     Inserting article: "【悲報】エロ同人作家さん、リベラルな漫画を描いてしまう"
+[00:26:42.973] Server  LOG     Inserting article: "【悲報】D.Gray-manのリナリーさん、セクハラされてしまう"
+[00:26:42.973] Server  LOG     Inserting article: "【悲報】今年のコミケ、またブルアカに侵食される"
+[00:26:42.973] Server  LOG     Inserting article: "コミケ、コミケの商標の使用について表明"
+[00:26:42.973] Server  LOG     Inserting article: "タフと彼岸島はなんJでネタにされるのに聖闘士星矢はネタにされないのはなんで？"
+[00:26:42.974] Server  LOG     Inserting article: "ゆるキャン△、なぜ流行ったのか謎www"
+[00:26:42.974] Server  LOG     Inserting article: "迷い猫オーバーランとかいうアニメあったでしょ"
+[00:26:42.974] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデル「私は殺された」"
+[00:26:42.974] Server  LOG     Inserting article: "少年誌のラブコメ漫画、「もう女に任せよう」という機運が高まるwwww"
+[00:26:42.974] Server  LOG     Inserting article: "【速報】機動戦艦ナデシコ劇場版、地上波初放送wwwww"
+[00:26:42.974] Server  LOG     Inserting article: "弱虫ペダル(97)←これwwwwwwww"
+[00:26:42.974] Server  LOG     Inserting article: "【速報】アニメ「僕だけがいない街」面白すぎるwww"
+[00:26:42.974] Server  LOG     Inserting article: "【朗報】可愛すぎる黒人キャラクターが海外で大バズりする"
+[00:26:42.975] Server  LOG     Inserting article: "ベルセルク「アシスタントで続けます」ワイ「ほーん、そろそろゴッドハンド1人くらい倒したか？」"
+[00:26:42.975] Server  LOG     Inserting article: "インフィニット・ストラトスとかいう人気美少女動物園アニメwww"
+[00:26:42.975] Server  LOG     Inserting article: "鋼の錬金術師エド「チートを使ってレベル100！😤」周りの人たち「こつこつ地道にレベル100！🤌\ud83d"
+[00:26:42.975] Server  LOG     Inserting article: "【悲報】クロロ=ルシルフルさん(26)、カッコつけてちょっと煽ったら思ったよりボコられてしまう"
+[00:26:42.975] Server  LOG     Inserting article: "ベジータさん、ようやく超サイヤ人になれたのに人造人間18号にボコボコにされる"
+[00:26:42.975] Server  LOG     Inserting article: "作者が死んだのに、走らされてる作品→1位ちびまる子ちやん、2位ドラゴボ、3位孤独のグルメ"
+[00:26:42.976] Server  LOG     Inserting article: "【悲報】脳外科医竹田くんのモデルを助けるクラウドファンディング、開始即中止"
+[00:26:42.976] Server  LOG     Inserting article: "【悲報】芥見下々(呪術作者)、アンチ高市だった"
+[00:26:42.976] Server  LOG     Inserting article: "【動画】トリコでのスパゲティの麺の作成風景、こんな感じで作られてワイらのもとに届くんやな😳"
+[00:26:42.976] Server  LOG     Inserting article: "【画像】めしぬま、だいぶ絵が綺麗になってると話題に"
+[00:26:42.976] Server  LOG     Inserting article: "【画像】NHKさん、正月アニメに本気を出してしまう…"
+[00:26:42.976] Server  LOG     Inserting article: "シャーマンキングの作者、侍の幽霊と少年のバトル漫画をコロコロで連載開始wwww"
+[00:26:42.976] Server  LOG     Inserting article: "【悲報】ウマ娘の新キャラ、不人気確定の緑髪で逝く"
+[00:26:42.977] Server  LOG     Inserting article: "はじめの一歩の作者、休み過ぎな事をファンに咎められてめっちゃ効いてしまう"
+[00:26:42.977] Server  LOG     Inserting article: "ぼっちちゃんの通学経路、ヤバすぎるwww"
+[00:26:42.977] Server  LOG     Inserting article: "【悲報】フリーレン、極右だった"
+[00:26:42.977] Server  LOG     Inserting article: "ワイ、あさひなぐという漫画を読んで号泣"
+[00:26:42.977] Server  LOG     Inserting article: "【画像】ガンダムエース最新号の表紙、ガチでヤバいwww"
+[00:26:42.977] Server  LOG     Inserting article: "【訃報】漫画家の魚喃キリコさん(52)死去"
+[00:26:42.977] Server  LOG     Inserting article: "「ごちうさ」新作アニメ、長編劇場版に！制作会社＆キャラデザが変更へ"
+[00:26:42.978] Server  LOG     Inserting article: "【悲報】台湾の無差別殺人犯、アニ豚だった…台湾でアニメボイコット運動が加熱"
+[00:26:42.978] Server  LOG     Inserting article: "【悲報】奥浩哉さん、とんでもないホモ漫画を連載開始"
+[00:26:42.978] Server  LOG     Inserting article: "【朗報】呪術廻戦の五条先生、宿儺に完全勝利"
+[00:26:42.978] Server  LOG     Inserting article: "【画像】イリヤの新作フィギュア、やばい"
+[00:26:42.979] Server  LOG     Inserting article: "【悲報】ラサール石井さん、こち亀にお気持ち表明"
+[00:26:42.979] Server  LOG     Inserting article: "【画像】「君のことが大大大大大好きな100人の彼女」のヒロインがアジアンメイド風衣装で登場！"
+[00:26:42.979] Server  LOG     Inserting article: "【速報】漫画版の化物語、とてつもなく面白い"
+[00:26:42.979] Server  LOG     Inserting article: "【悲報】ワンパンマン村田(日本の漫画家で一番絵が上手い)←叩かれる理由"
+[00:26:42.979] Server  LOG     Inserting article: "【悲報】黒崎一護さん、ラインを越えてしまう…"
+[00:26:42.979] Server  LOG     Inserting article: "【悲報】釘崎野薔薇ちゃん、呪術廻戦のキャラの中でも明らかに弱すぎる…"
+[00:26:42.979] Server  LOG     Inserting article: "アニメ化してほしいマンガランキング、2026本投票開始！過去には『SPY×FAMILY』や『薬屋』が"
+[00:26:42.979] Server  LOG     Inserting article: "ワンダンス、最終回なのに誰も見ていない"
+[00:26:42.980] Server  LOG     Inserting article: "【悲報】ウマ娘とココスのコラボ、1人を除いて全員弱男特効メンツだと話題に"
+[00:26:42.980] Server  LOG     Inserting article: "弱虫ペダル最新話の今泉くん、あまりにも情けなさすぎて終わる"
+[00:26:42.980] Server  LOG     Inserting article: "マーベル最新作『アベンジャーズ/ドゥームズデイ』の予告編、YouTubeで公開"
+[00:26:42.980] Server  LOG     Inserting article: "【悲報】キングダム、「結果に向けて矢を撃つ」敵が現れて終わる"
+[00:26:42.980] Server  LOG     Inserting article: "【朗報】機動戦士ガンダムサンダーボルト、完結記念に229話無料"
+[00:26:42.980] Server  LOG     Inserting article: "【朗報】ヒロアカで1番エロい女、決まる"
+[00:26:42.981] Server  LOG     Inserting article: "【悲報】呪術廻戦公式さん、呪術のパクりゲーにお気持ち表明"
+[00:26:42.981] Server  LOG     Inserting article: "【悲報】セブンレのちいかわケーキ、限界突破する"
+[00:26:42.981] Server  LOG     Inserting article: "【キングダム】弓兄弟の弟、死亡"
+[00:26:42.981] Server  LOG     Inserting article: "【悲報】海外の造形師、クオリティの高いウマ娘のフィギュアを作るもまったく売れず絶望"
+[00:26:42.981] Server  LOG     Inserting article: "【悲報】ハンターハンター監督「1話からカイト消します！」←これ"
+[00:26:42.981] Server  LOG     Inserting article: "ヤンマガで下品なフリーレンが連載中www"
+[00:26:42.981] Server  LOG     Inserting article: "【画像】週刊少年マガジン、性欲作品だらけになる"
+[00:26:42.981] Server  LOG     Inserting article: "【画像あり】神アニメの円盤が届いた"
+[00:26:42.982] Server  LOG     Inserting article: "【悲報】ワンピースのボア・ハンコック(31)、尾田先生の扱いが悪すぎるwww"
+[00:26:42.982] Server  LOG     Inserting article: "はじめの一歩、しばらく休載に…"
+[00:26:42.982] Server  LOG     Inserting article: "松屋ちいかわコラボ、鬼辛カレーを食べないとグッズ貰えず女さん阿鼻叫喚"
+[00:26:42.982] Server  LOG     Inserting article: "【速報】ライアーゲーム続編、連載決定www"
+[00:26:42.982] Server  LOG     Inserting article: "【悲報】庵野秀明「今の日本は子供向けアニメが少なすぎる！！もっと子供向け番組を増やせ！！」"
+[00:26:42.982] Server  LOG     Inserting article: "【画像】江戸ちいかわ、ハゲたおっさんみたいになる"
+[00:26:42.982] Server  LOG     Inserting article: "【悲報】葬送のフリーレン、今年は7話連載でフィニッシュ"
+[00:26:42.983] Server  LOG     Inserting article: "【謎】ドラゴンボールの新作ソシャゲ、何かがおかしい…"
+[00:26:42.983] Server  LOG     Inserting article: "天上院明日香とかいう遊戯王史上最高のシコ性能を持つヒロイン"
+[00:26:42.983] Server  LOG     Inserting article: "後藤ひとり「高校では同じ学校の人と一緒になりたくない……せや！東京まで行ったろ！」←これ"
+[00:26:42.983] Server  LOG     Inserting article: "【急募】MAJOR 2ndをこれからMAJOR並みに面白くする方法"
+[00:26:42.983] Server  LOG     Inserting article: "ラオウ「くどい！誰を愛そうがどんなに汚れようが最後にこのラオウの横におればよい！」"
+[00:26:42.983] Server  LOG     Inserting article: "【画像】彡(^)(^)「草　ヤムチャが天下一武道会1回戦突破するぐらいありえねぇだろ」"
+[00:26:42.983] Server  LOG     Inserting article: "【画像】花の慶次とかいう漫画の名言、現代人に刺さり過ぎる"
+[00:26:42.983] Server  LOG     Inserting article: "ワンピース、Xで炎上wwwwwwwww"
+[00:26:42.984] Server  LOG     Inserting article: "【悲報】漫画家さん、暴投で盗塁してしまう"
+[00:26:42.984] Server  LOG     Inserting article: "【悲報】ラサール石井さん、唯一のアイデンティティである両津を失う"
+[00:26:42.984] Server  LOG     Inserting article: "【速報】実写版ワンピースのチョッパー編、ガチで再現度が高すぎる"
+[00:26:42.984] Server  LOG     Inserting article: "アニメらんま1/2、2期話題にならず終了"
+[00:26:42.984] Server  LOG     Inserting article: "【タフ】タフ君が食べてる『タフ丼』、ヤバい"
+[00:26:42.984] Server  LOG     Inserting article: "【朗報】名作アニメ「地獄楽」がYouTubeにて一挙公開wwww"
+[00:26:42.984] Server  LOG     Inserting article: "アトリエのソシャゲ、えっちなキャラがたくさんいる"
+[00:26:42.985] Server  LOG     Manga scrape completed successfully
+[00:26:42.998] Server  LOG     Articles count: 83
+[00:26:42.998] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[00:26:43.151] Browser LOG     Fetched articles: 83
+[00:26:43.151] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:43.151] Browser LOG     Rendering MangaTable
+[00:26:43.151] Browser LOG     Date 2025/12/30: 14 articles
+[00:26:43.151] Browser LOG     Date 2025/12/29: 15 articles
+[00:26:43.151] Browser LOG     Date 2025/12/28: 15 articles
+[00:26:43.151] Browser LOG     Date 2025/12/27: 15 articles
+[00:26:43.151] Browser LOG     Date 2025/12/26: 15 articles
+[00:26:43.151] Browser LOG     Date 2025/12/25: 9 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[00:26:43.151] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:36:42.065] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:36:42.065] Browser LOG     Rendering MangaTable
+[08:36:42.065] Browser LOG     Date 2025/12/30: 14 articles
+[08:36:42.065] Browser LOG     Date 2025/12/29: 15 articles
+[08:36:42.065] Browser LOG     Date 2025/12/28: 15 articles
+[08:36:42.065] Browser LOG     Date 2025/12/27: 15 articles
+[08:36:42.065] Browser LOG     Date 2025/12/26: 15 articles
+[08:36:42.065] Browser LOG     Date 2025/12/25: 9 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:36:42.065] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:37:07.528] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:37:07.528] Browser LOG     Rendering MangaTable
+[08:37:07.529] Browser LOG     Date 2025/12/30: 14 articles
+[08:37:07.529] Browser LOG     Date 2025/12/29: 15 articles
+[08:37:07.529] Browser LOG     Date 2025/12/28: 15 articles
+[08:37:07.529] Browser LOG     Date 2025/12/27: 15 articles
+[08:37:07.529] Browser LOG     Date 2025/12/26: 15 articles
+[08:37:07.529] Browser LOG     Date 2025/12/25: 9 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:37:07.529] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:37:19.771] Server  LOG     ✓ Compiled in 214ms
+[08:40:30.670] Server  LOG     Initializing database module
+[08:40:30.671] Server  LOG     DB path: "/Users/masaki/Desktop/OriginalApp/MangaClip/mangaclip.db"
+[08:40:30.672] Server  LOG     DB instance created
+[08:40:30.672] Server  LOG     Creating tables...
+[08:40:30.672] Server  LOG     Tables created successfully
+[08:44:32.053] Server  LOG     ✓ Compiled in 31ms
+[08:44:36.577] Server  LOG     ✓ Compiled in 45ms
+[08:44:36.683] Browser ERROR   ./Desktop/OriginalApp/MangaClip/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: /Users/masaki/Desktop/OriginalApp/MangaClip/app/globals.css:1:1: At-rule without name
+    [at Input.error (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/input.js:135:16)]
+    [at Parser.unnamedAtrule (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/parser.js:603:22)]
+    [at Parser.atrule (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/parser.js:40:12)]
+    [at Parser.parse (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/parser.js:464:16)]
+    [at parse (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/parse.js:11:12)]
+    [at new LazyResult (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/lazy-result.js:165:16)]
+    [at Processor.process (turbopack:///[project]/Desktop/OriginalApp/MangaClip/node_modules/postcss/lib/processor.js:53:14)]
+    [at transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51)]
+    [at run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:29)]
+    [at run (turbopack:///[turbopack-node]/ipc/evaluate.ts:115:11)]
+
+Import trace:
+  Client Component Browser:
+    ./Desktop/OriginalApp/MangaClip/app/globals.css [Client Component Browser]
+    ./Desktop/OriginalApp/MangaClip/app/layout.tsx [Server Component]
+[08:47:05.070] Server  LOG     ✓ Compiled in 64ms
+[08:47:23.923] Server  LOG     ✓ Compiled in 83ms
+[08:47:37.123] Server  LOG     Articles count: 83
+[08:47:37.123] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[08:47:37.133] Server  LOG     Articles count: 83
+[08:47:37.133] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[08:47:37.348] Browser LOG     Grouped articles keys: []
+[08:47:37.348] Browser LOG     Rendering MangaTable
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:47:37.348] Browser LOG     Fetched articles: 83
+[08:47:37.348] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:47:37.348] Browser LOG     Rendering MangaTable
+[08:47:37.348] Browser LOG     Date 2025/12/30: 14 articles
+[08:47:37.348] Browser LOG     Date 2025/12/29: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/28: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/27: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/26: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/25: 9 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:47:37.348] Browser LOG     Fetched articles: 83
+[08:47:37.348] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:47:37.348] Browser LOG     Rendering MangaTable
+[08:47:37.348] Browser LOG     Date 2025/12/30: 14 articles
+[08:47:37.348] Browser LOG     Date 2025/12/29: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/28: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/27: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/26: 15 articles
+[08:47:37.348] Browser LOG     Date 2025/12/25: 9 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
