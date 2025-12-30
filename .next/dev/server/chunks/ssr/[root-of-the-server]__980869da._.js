@@ -168,7 +168,11 @@ function MangaTable() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                             onClick: ()=>{
                                 const urls = groupedArticles[date].map((a)=>a.url);
-                                urls.forEach((url)=>window.open(url, '_blank'));
+                                console.log('URLs to open:', urls);
+                                urls.forEach((url, index)=>{
+                                    console.log(`Opening URL ${index + 1}: ${url}`);
+                                    setTimeout(()=>window.open(url, '_blank'), index * 500);
+                                });
                             },
                             className: "mb-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600",
                             children: "URL一括開き"
@@ -189,7 +193,7 @@ function MangaTable() {
                                                 children: "時間"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 146,
+                                                lineNumber: 150,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -197,7 +201,7 @@ function MangaTable() {
                                                 children: "オリジナルタイトル"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 147,
+                                                lineNumber: 151,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -205,7 +209,7 @@ function MangaTable() {
                                                 children: "URL"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 148,
+                                                lineNumber: 152,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -213,7 +217,7 @@ function MangaTable() {
                                                 children: "生成タイトル"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 149,
+                                                lineNumber: 153,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -221,18 +225,18 @@ function MangaTable() {
                                                 children: "操作"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 150,
+                                                lineNumber: 154,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                        lineNumber: 145,
+                                        lineNumber: 149,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                    lineNumber: 144,
+                                    lineNumber: 148,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -253,7 +257,7 @@ function MangaTable() {
                                                     }) : ''
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 163,
+                                                    lineNumber: 167,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -261,7 +265,7 @@ function MangaTable() {
                                                     children: article.originalTitle
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 166,
+                                                    lineNumber: 170,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -274,12 +278,12 @@ function MangaTable() {
                                                         children: article.url
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                        lineNumber: 168,
+                                                        lineNumber: 172,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 167,
+                                                    lineNumber: 171,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -287,7 +291,7 @@ function MangaTable() {
                                                     children: article.generatedTitle || article.originalTitle
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 172,
+                                                    lineNumber: 176,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -299,7 +303,7 @@ function MangaTable() {
                                                             children: "コピー"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                            lineNumber: 174,
+                                                            lineNumber: 178,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -308,30 +312,30 @@ function MangaTable() {
                                                             children: "削除"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                            lineNumber: 180,
+                                                            lineNumber: 184,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 173,
+                                                    lineNumber: 177,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, article.id, true, {
                                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                            lineNumber: 162,
+                                            lineNumber: 166,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                    lineNumber: 153,
+                                    lineNumber: 157,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                            lineNumber: 143,
+                            lineNumber: 147,
                             columnNumber: 11
                         }, this)
                     ]

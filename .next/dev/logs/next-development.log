@@ -678,3 +678,20 @@ Import trace:
 [08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
 [08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
 [08:47:37.348] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:52:24.399] Server  LOG     ✓ Compiled in 46ms
+[08:52:24.545] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:52:24.545] Browser LOG     Rendering MangaTable
+[08:52:24.545] Browser LOG     Date 2025/12/30: 14 articles
+[08:52:24.545] Browser LOG     Date 2025/12/29: 15 articles
+[08:52:24.545] Browser LOG     Date 2025/12/28: 15 articles
+[08:52:24.545] Browser LOG     Date 2025/12/27: 15 articles
+[08:52:24.545] Browser LOG     Date 2025/12/26: 15 articles
+[08:52:24.545] Browser LOG     Date 2025/12/25: 9 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles

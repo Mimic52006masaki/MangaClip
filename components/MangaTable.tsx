@@ -134,7 +134,11 @@ export default function MangaTable() {
           <button
             onClick={() => {
               const urls = groupedArticles[date].map(a => a.url);
-              urls.forEach(url => window.open(url, '_blank'));
+              console.log('URLs to open:', urls);
+              urls.forEach((url, index) => {
+                console.log(`Opening URL ${index + 1}: ${url}`);
+                setTimeout(() => window.open(url, '_blank'), index * 500);
+              });
             }}
             className="mb-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
