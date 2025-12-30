@@ -133,7 +133,7 @@ export default function MangaTable() {
           <h3 className="text-xl font-semibold mb-2">{date}</h3>
           <button
             onClick={() => {
-              const urls = groupedArticles[date].map(a => a.url);
+              const urls = groupedArticles[date].map(a => a.url).slice(0, 15);
               console.log('URLs to open:', urls);
               urls.forEach((url, index) => {
                 console.log(`Opening URL ${index + 1}: ${url}`);

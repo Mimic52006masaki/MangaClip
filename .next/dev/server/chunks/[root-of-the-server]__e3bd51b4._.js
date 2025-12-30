@@ -296,7 +296,10 @@ async function scrapeMangaArticles() {
                 const href = aTag.attr('href');
                 if (title && href) {
                     let fullUrl = href;
-                    if (href.includes('anaguro.yanen.org/')) {
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
                         fullUrl = href.replace('https://anaguro.yanen.org/', '');
                     }
                     articles.push({
@@ -337,7 +340,10 @@ async function scrapeAnimeArticles() {
                 const href = aTag.attr('href');
                 if (title && href) {
                     let fullUrl = href;
-                    if (href.includes('anaguro.yanen.org/')) {
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
                         fullUrl = href.replace('https://anaguro.yanen.org/', '');
                     }
                     articles.push({
