@@ -695,3 +695,43 @@ Import trace:
 [08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
 [08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
 [08:52:24.545] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:52:52.830] Server  LOG     Grouped articles keys: []
+[08:52:52.830] Server  LOG     Rendering MangaTable
+[08:52:53.113] Browser LOG     Grouped articles keys: []
+[08:52:53.113] Browser LOG     Rendering MangaTable
+[08:52:53.113] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: []
+[08:52:53.113] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:52:53.126] Server  LOG     Articles count: 83
+[08:52:53.126] Server  LOG     First article targetDate: "2025-12-30T11:00:00.000Z"
+[08:52:53.295] Browser LOG     Fetched articles: 83
+[08:52:53.295] Browser LOG     Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:52:53.295] Browser LOG     Rendering MangaTable
+[08:52:53.295] Browser LOG     Date 2025/12/30: 14 articles
+[08:52:53.295] Browser LOG     Date 2025/12/29: 15 articles
+[08:52:53.295] Browser LOG     Date 2025/12/28: 15 articles
+[08:52:53.295] Browser LOG     Date 2025/12/27: 15 articles
+[08:52:53.295] Browser LOG     Date 2025/12/26: 15 articles
+[08:52:53.295] Browser LOG     Date 2025/12/25: 9 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Grouped articles keys: ["2025/12/30","2025/12/29","2025/12/28","2025/12/27","2025/12/26","2025/12/25"]
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Rendering MangaTable
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/30: 14 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/29: 15 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/28: 15 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/27: 15 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/26: 15 articles
+[08:52:53.295] Browser LOG     [2;38;2;124;124;124m%s[0m Date 2025/12/25: 9 articles
+[08:52:55.732] Browser LOG     URLs to open: ["https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122918/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122919/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122914/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122916/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122917/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123001/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123002/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123004/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123007/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123009/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123010/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123013/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123020/","https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123021/"]
+[08:52:55.732] Browser LOG     Opening URL 1: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122918/
+[08:52:55.732] Browser LOG     Opening URL 2: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122919/
+[08:52:55.732] Browser LOG     Opening URL 3: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122914/
+[08:52:55.732] Browser LOG     Opening URL 4: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122916/
+[08:52:55.732] Browser LOG     Opening URL 5: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25122917/
+[08:52:55.732] Browser LOG     Opening URL 6: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123001/
+[08:52:55.732] Browser LOG     Opening URL 7: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123002/
+[08:52:55.732] Browser LOG     Opening URL 8: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123004/
+[08:52:55.732] Browser LOG     Opening URL 9: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123007/
+[08:52:55.732] Browser LOG     Opening URL 10: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123009/
+[08:52:55.732] Browser LOG     Opening URL 11: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123010/
+[08:52:55.732] Browser LOG     Opening URL 12: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123013/
+[08:52:55.732] Browser LOG     Opening URL 13: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123020/
+[08:52:55.732] Browser LOG     Opening URL 14: https://anaguro.yanen.org/https://manga.itsys-tech.com/post/25123021/

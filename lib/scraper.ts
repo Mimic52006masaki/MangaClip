@@ -35,9 +35,8 @@ export async function scrapeMangaArticles(): Promise<ScrapedArticle[]> {
         const title = titleElem.text().trim();
         const href = aTag.attr('href');
         if (title && href) {
-          const urlA = href.replace('./cnt.cgi?1778=', '');
-          const fullUrl = 'https://anaguro.yanen.org/' + urlA;
-          articles.push({ title, url: fullUrl });
+          const fullUrl = href.startsWith('http') ? href : 'https://anaguro.yanen.org/' + href.replace('./cnt.cgi?1778=', '');
+          articles.push({ title, url: fullUrl.trim() });
         }
       }
     });
@@ -78,9 +77,8 @@ export async function scrapeAnimeArticles(): Promise<ScrapedArticle[]> {
         const title = titleElem.text().trim();
         const href = aTag.attr('href');
         if (title && href) {
-          const urlA = href.replace('./cnt.cgi?1996=', '');
-          const fullUrl = 'https://anaguro.yanen.org/' + urlA;
-          articles.push({ title, url: fullUrl });
+          const fullUrl = href.startsWith('http') ? href : 'https://anaguro.yanen.org/' + href.replace('./cnt.cgi?1996=', '');
+          articles.push({ title, url: fullUrl.trim() });
         }
       }
     });
