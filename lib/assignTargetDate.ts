@@ -1,4 +1,3 @@
-import { MangaArticle } from './database';
 import db from './database';
 
 interface ScrapedArticle {
@@ -6,75 +5,45 @@ interface ScrapedArticle {
   url: string;
 }
 
-/**
- * 前提:
- * - scraped[0] は最新記事
- * - scraped[last] は最古記事
- *
- * 仕様:
- * - 配列の順序は一切変更しない
- * - 古い記事から15件ずつ日付を割り当てる
- * - 最新の記事ブロックが最新日付
- * - 時間は使わず 00:00 固定
- */
-export function insertScrapedArticles(
-  scraped: ScrapedArticle[]
-): MangaArticle[] {
-  const assignedArticles: MangaArticle[] = [];
+function extractPostId(url: string): number {
+  const match = url.match(/\/post\/(\d+)\//);
+  if (!match) throw new Error(`Invalid url: ${url}`);
+  return Number(match[1]);
+}
 
-  // 1. 古い順に15件ずつブロックを作る
-  const dayBlocks: ScrapedArticle[][] = [];
-  for (let i = scraped.length; i > 0; i -= 15) {
-    dayBlocks.push(scraped.slice(Math.max(0, i - 15), i));
-  }
-  // dayBlocks[0] が最古、最後が最新
+export function insertScrapedArticles(scraped: ScrapedArticle[]) {
+  const insert = db.prepare(`
+    INSERT OR IGNORE INTO manga_articles
+      (post_id, originalTitle, generatedTitle, url, checked, targetDate, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, 0, ?, ?, ?)
+  `);
 
+  const now = new Date().toISOString();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // 2. 日付を割り当てる（古い → 新しい）
-  dayBlocks.forEach((block, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (dayBlocks.length - 1 - index));
-
-    block.forEach(article => {
-      assignedArticles.push({
-        originalTitle: article.title,
-        generatedTitle: article.title,
-        url: article.url,
-        checked: false,
-        targetDate: date.toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        id: 0
-      });
-    });
-  });
-
-  // 3. DBに挿入
-  const insert = db.prepare(`
-    INSERT INTO manga_articles
-      (originalTitle, generatedTitle, url, checked, targetDate, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertedArticles: MangaArticle[] = [];
-  for (const article of assignedArticles) {
-    const result = insert.run(
-      article.originalTitle,
-      article.generatedTitle,
+  for (const article of scraped) {
+    insert.run(
+      extractPostId(article.url),
+      article.title,
+      article.title,
       article.url,
-      article.checked ? 1 : 0,
-      article.targetDate,
-      article.createdAt,
-      article.updatedAt
+      today.toISOString(),
+      now,
+      now
     );
-    insertedArticles.push({
-      ...article,
-      id: result.lastInsertRowid as number
-    });
   }
 
-  return insertedArticles;
+  // 件数制限: 300件を超えたら古い順に削除
+  const deleteOld = db.prepare(`
+    DELETE FROM manga_articles
+    WHERE post_id < (
+      SELECT post_id
+      FROM manga_articles
+      ORDER BY post_id DESC
+      LIMIT 1 OFFSET 299
+    )
+  `);
+  deleteOld.run();
 }
 

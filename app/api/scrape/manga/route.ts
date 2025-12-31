@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { scrapeMangaArticles } from '@/lib/scraper';
-import { assignTargetDates } from '@/lib/assignTargetDate';
+import { insertScrapedArticles } from '@/lib/assignTargetDate';
 import db, { MangaArticle } from '@/lib/database';
 
 export async function POST() {
@@ -30,48 +30,57 @@ export async function POST() {
       });
     }
 
-    // Assign target dates
-    console.log('Assigning target dates');
-    const articlesWithTargetDate = assignTargetDates(newArticles.map(article => ({
-      originalTitle: article.title,
-      generatedTitle: null,
-      url: article.url,
-      targetDate: '', // will be assigned
-      checked: false
-    })));
-    console.log('Target dates assigned, count:', articlesWithTargetDate.length);
-
-    // Insert new articles
-    const insertStmt = db.prepare(`
-      INSERT INTO manga_articles (originalTitle, generatedTitle, url, targetDate, checked)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-    const insertedArticles: MangaArticle[] = [];
-
-    for (const article of articlesWithTargetDate) {
-      console.log('Inserting article:', article.originalTitle.substring(0, 50));
-      const result = insertStmt.run(
-        article.originalTitle,
-        article.generatedTitle,
-        article.url,
-        article.targetDate,
-        article.checked ? 1 : 0
-      );
-      const insertedArticle = db.prepare('SELECT * FROM manga_articles WHERE id = ?').get(result.lastInsertRowid) as MangaArticle;
-      insertedArticles.push(insertedArticle);
-    }
+    // Insert new articles with assigned target dates
+    console.log('Inserting new articles');
+    insertScrapedArticles(newArticles);
 
     console.log('Manga scrape completed successfully');
     return NextResponse.json({
       success: true,
       scraped: scrapedArticles.length,
       new: newArticles.length,
-      articles: insertedArticles
+      articles: []
     });
   } catch (error) {
     console.error('Error in manga scrape:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to scrape manga articles' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    if (body.id) {
+      const updates: string[] = [];
+      const params: any[] = [];
+      if (body.targetDate !== undefined) {
+        updates.push('targetDate = ?');
+        params.push(body.targetDate);
+      }
+      if (body.checked !== undefined) {
+        updates.push('checked = ?');
+        params.push(body.checked ? 1 : 0);
+      }
+      if (updates.length === 0) {
+        return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
+      }
+      updates.push("updatedAt = datetime('now')");
+      params.push(body.id);
+      const result = db.prepare(`UPDATE manga_articles SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+      if (result.changes === 0) {
+        return NextResponse.json({ success: false, error: 'Article not found or no changes made' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ success: false, error: 'Invalid request: id required' }, { status: 400 });
+    }
+  } catch (error) {
+    console.error('Error updating article:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update article' },
       { status: 500 }
     );
   }
@@ -84,9 +93,19 @@ export async function DELETE(request: Request) {
       // Bulk delete all manga articles
       const result = db.prepare('DELETE FROM manga_articles').run();
       return NextResponse.json({ success: true, deleted: result.changes });
+    } else if (body.limit && body.date) {
+      // Delete the latest 'limit' articles for the given date
+      const limit = parseInt(body.limit, 10);
+      if (isNaN(limit) || limit <= 0) {
+        return NextResponse.json({ success: false, error: 'Invalid limit' }, { status: 400 });
+      }
+      // Convert date from 'YYYY/MM/DD' to 'YYYY-MM-DD'
+      const dateStr = body.date.replace(/\//g, '-');
+      const result = db.prepare('DELETE FROM manga_articles WHERE id IN (SELECT id FROM manga_articles WHERE DATE(targetDate) = DATE(?) ORDER BY id DESC LIMIT ?)').run(dateStr, limit);
+      return NextResponse.json({ success: true, deleted: result.changes });
     } else if (body.id) {
-      // Delete single article
-      const result = db.prepare('DELETE FROM manga_articles WHERE id = ?').run(body.id);
+      // Mark single article as checked (hide from UI)
+      const result = db.prepare("UPDATE manga_articles SET checked = 1, updatedAt = datetime('now') WHERE id = ?").run(body.id);
       if (result.changes === 0) {
         return NextResponse.json({ success: false, error: 'Article not found' }, { status: 404 });
       }
@@ -95,22 +114,42 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: 'Invalid request' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Error deleting article:', error);
+    console.error('Error updating article:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete article' },
+      { success: false, error: 'Failed to update article' },
       { status: 500 }
     );
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const all = searchParams.get('all') === 'true';
+    if (all) {
+      const articles = db.prepare(`
+        SELECT *
+        FROM manga_articles
+        ORDER BY post_id DESC;
+      `).all() as MangaArticle[];
+      return NextResponse.json({ success: true, articles });
+    }
+
+    const limit = parseInt(searchParams.get('limit') || '15', 10);
+    if (isNaN(limit) || limit <= 0 || limit > 100) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid limit parameter' },
+        { status: 400 }
+      );
+    }
+
     const articles = db.prepare(`
-      SELECT * FROM manga_articles
-      ORDER BY targetDate DESC, targetDate ASC
-    `).all() as MangaArticle[];
-    console.log('Articles count:', articles.length);
-    console.log('First article targetDate:', articles[0]?.targetDate);
+      SELECT *
+      FROM manga_articles
+      WHERE checked = 0
+      ORDER BY post_id DESC
+      LIMIT ?;
+    `).all(limit) as MangaArticle[];
 
     return NextResponse.json({ success: true, articles });
   } catch (error) {
