@@ -93,16 +93,6 @@ export async function DELETE(request: Request) {
       // Bulk delete all manga articles
       const result = db.prepare('DELETE FROM manga_articles').run();
       return NextResponse.json({ success: true, deleted: result.changes });
-    } else if (body.limit && body.date) {
-      // Delete the latest 'limit' articles for the given date
-      const limit = parseInt(body.limit, 10);
-      if (isNaN(limit) || limit <= 0) {
-        return NextResponse.json({ success: false, error: 'Invalid limit' }, { status: 400 });
-      }
-      // Convert date from 'YYYY/MM/DD' to 'YYYY-MM-DD'
-      const dateStr = body.date.replace(/\//g, '-');
-      const result = db.prepare('DELETE FROM manga_articles WHERE id IN (SELECT id FROM manga_articles WHERE DATE(targetDate) = DATE(?) ORDER BY id DESC LIMIT ?)').run(dateStr, limit);
-      return NextResponse.json({ success: true, deleted: result.changes });
     } else if (body.id) {
       // Mark single article as checked (hide from UI)
       const result = db.prepare("UPDATE manga_articles SET checked = 1, updatedAt = datetime('now') WHERE id = ?").run(body.id);

@@ -146,25 +146,7 @@ export default function MangaTable() {
     }
   };
 
-  const handleBulkDelete15 = async (date: string) => {
-    if (!confirm(`${date}の最新15件の漫画記事を削除しますか？`)) return;
-    try {
-      const response = await fetch('/api/scrape/manga', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 15, date })
-      });
-      const data = await response.json();
-      if (data.success) {
-        await fetchArticles(); // Refresh the list
-        alert(`${data.deleted}件削除しました`);
-      } else {
-        alert('削除失敗: ' + data.error);
-      }
-    } catch (error) {
-      alert('削除失敗');
-    }
-  };
+
 
   useEffect(() => {
     fetchArticles();
@@ -253,12 +235,7 @@ export default function MangaTable() {
             >
               URL一括開き
             </button>
-            <button
-              onClick={() => handleBulkDelete15(date)}
-              className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-            >
-              15件削除
-            </button>
+
           </div>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
