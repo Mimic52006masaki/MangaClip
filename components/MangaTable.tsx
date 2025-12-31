@@ -152,15 +152,13 @@ export default function MangaTable() {
     fetchArticles();
   }, [limit]);
 
-  // Group by date
-  const groupedArticles = articles.reduce((groups, article) => {
-    if (!article.targetDate) return groups;
-    const date = new Date(article.targetDate).toLocaleDateString('ja-JP');
-    if (!groups[date]) groups[date] = [];
-    groups[date].push(article);
-    return groups;
-  }, {} as Record<string, MangaArticle[]>);
-  console.log('Grouped articles keys:', Object.keys(groupedArticles));
+  // Sort articles by targetDate descending (date), then ascending (time)
+  const sortedArticles = [...articles].sort((a, b) => {
+    if (!a.targetDate && !b.targetDate) return 0;
+    if (!a.targetDate) return 1;
+    if (!b.targetDate) return -1;
+    return new Date(b.targetDate).getTime() - new Date(a.targetDate).getTime();
+  });
 
   console.log('Rendering MangaTable');
   return (
@@ -218,108 +216,87 @@ export default function MangaTable() {
         </button>
       </div>
 
-      {Object.keys(groupedArticles).sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).map(date => (
-        <div key={date} className="mb-8">
-          <h3 className="text-xl font-semibold mb-2">{date}</h3>
-          <div className="mb-2 space-x-2">
-            <button
-              onClick={() => {
-                const urls = (groupedArticles[date] || []).map(a => a.url).slice(0, 16);
-                console.log('URLs to open:', urls);
-                urls.forEach((url, index) => {
-                  console.log(`Opening URL ${index + 1}: ${url}`);
-                  setTimeout(() => window.open(url, '_blank'), index * 500);
-                });
-              }}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              URL一括開き
-            </button>
-
-          </div>
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">日時</th>
-                <th className="border border-gray-300 px-4 py-2">オリジナルタイトル</th>
-                <th className="border border-gray-300 px-4 py-2">URL</th>
-                <th className="border border-gray-300 px-4 py-2">生成タイトル</th>
-                <th className="border border-gray-300 px-4 py-2">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(groupedArticles[date] || []).map(article => (
-                <tr key={article.id}>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {editingId === article.id ? (
-                      <input
-                        type="datetime-local"
-                        value={editingTime}
-                        onChange={(e) => setEditingTime(e.target.value)}
-                        className="px-2 py-1 border border-gray-300 rounded w-full"
-                      />
-                    ) : (
-                      article.targetDate ? new Date(article.targetDate).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''
-                    )}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">{article.originalTitle}</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                      {article.url}
-                    </a>
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">{article.generatedTitle || article.originalTitle}</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {editingId === article.id ? (
-                      <>
-                        <button
-                          onClick={() => handleUpdateTime(article.id, editingTime)}
-                          className="mr-2 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                        >
-                          保存
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingId(null);
-                            setEditingTime('');
-                          }}
-                          className="mr-2 px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-                        >
-                          キャンセル
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            setEditingId(article.id);
-                            setEditingTime(article.targetDate ? new Date(article.targetDate).toISOString().slice(0, 16) : '');
-                          }}
-                          className="mr-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => handleCopy(article.generatedTitle || article.originalTitle)}
-                          className="mr-2 px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
-                        >
-                          コピー
-                        </button>
-                        <button
-                          onClick={() => handleDelete(article.id)}
-                          className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                        >
-                          削除
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+      <table className="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border border-gray-300 px-4 py-2">日時</th>
+            <th className="border border-gray-300 px-4 py-2">オリジナルタイトル</th>
+            <th className="border border-gray-300 px-4 py-2">URL</th>
+            <th className="border border-gray-300 px-4 py-2">生成タイトル</th>
+            <th className="border border-gray-300 px-4 py-2">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedArticles.map(article => (
+            <tr key={article.id}>
+              <td className="border border-gray-300 px-4 py-2">
+                {editingId === article.id ? (
+                  <input
+                    type="datetime-local"
+                    value={editingTime}
+                    onChange={(e) => setEditingTime(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 rounded w-full"
+                  />
+                ) : (
+                  article.targetDate ? new Date(article.targetDate).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''
+                )}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">{article.originalTitle}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                  {article.url}
+                </a>
+              </td>
+              <td className="border border-gray-300 px-4 py-2">{article.generatedTitle || article.originalTitle}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {editingId === article.id ? (
+                  <>
+                    <button
+                      onClick={() => handleUpdateTime(article.id, editingTime)}
+                      className="mr-2 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      保存
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingId(null);
+                        setEditingTime('');
+                      }}
+                      className="mr-2 px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    >
+                      キャンセル
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditingId(article.id);
+                        setEditingTime(article.targetDate ? new Date(article.targetDate).toISOString().slice(0, 16) : '');
+                      }}
+                      className="mr-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      編集
+                    </button>
+                    <button
+                      onClick={() => handleCopy(article.generatedTitle || article.originalTitle)}
+                      className="mr-2 px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
+                    >
+                      コピー
+                    </button>
+                    <button
+                      onClick={() => handleDelete(article.id)}
+                      className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      削除
+                    </button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
