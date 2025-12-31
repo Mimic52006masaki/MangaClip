@@ -1,53 +1,80 @@
 import { MangaArticle } from './database';
 import db from './database';
 
-export function assignTargetDates(newArticles: Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt'>[]): Omit<MangaArticle, 'id' | 'createdAt' | 'updatedAt'>[] {
-  console.log(`Assigning target dates for ${newArticles.length} articles`);
+interface ScrapedArticle {
+  title: string;
+  url: string;
+}
 
-  // Get the latest targetDate from database
-  const row = db.prepare('SELECT targetDate FROM manga_articles WHERE targetDate IS NOT NULL ORDER BY targetDate DESC LIMIT 1').get() as { targetDate: string } | undefined;
-  const latestTargetDate = row?.targetDate || null;
-  console.log('Latest targetDate from database:', latestTargetDate);
+/**
+ * 前提:
+ * - scraped[0] は最新記事
+ * - scraped[last] は最古記事
+ *
+ * 仕様:
+ * - 配列の順序は一切変更しない
+ * - 古い記事から15件ずつ日付を割り当てる
+ * - 最新の記事ブロックが最新日付
+ * - 時間は使わず 00:00 固定
+ */
+export function insertScrapedArticles(
+  scraped: ScrapedArticle[]
+): MangaArticle[] {
+  const assignedArticles: MangaArticle[] = [];
 
-  let latestDate: Date;
-
-  if (latestTargetDate) {
-    latestDate = new Date(latestTargetDate);
-    console.log('Using latest date from storage:', latestDate.toISOString());
-  } else {
-    // If no articles, start from today 21:00
-    latestDate = new Date();
-    latestDate.setHours(21, 0, 0, 0);
-    console.log('No articles in storage, starting from today 21:00:', latestDate.toISOString());
+  // 1. 古い順に15件ずつブロックを作る
+  const dayBlocks: ScrapedArticle[][] = [];
+  for (let i = scraped.length; i > 0; i -= 15) {
+    dayBlocks.push(scraped.slice(Math.max(0, i - 15), i));
   }
+  // dayBlocks[0] が最古、最後が最新
 
-  // Assign targetDates in reverse order (newest first)
-  const assignedArticles = newArticles.map(article => {
-    let hour = latestDate.getHours() - 1;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    if (hour < 7) {
-      // Move to previous day 21:00
-      const prevDay = new Date(latestDate);
-      prevDay.setDate(prevDay.getDate() - 1);
-      prevDay.setHours(21, 0, 0, 0);
-      latestDate = prevDay;
-      hour = 21;
-    }
+  // 2. 日付を割り当てる（古い → 新しい）
+  dayBlocks.forEach((block, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (dayBlocks.length - 1 - index));
 
-    const targetDate = new Date(
-      latestDate.getFullYear(),
-      latestDate.getMonth(),
-      latestDate.getDate(),
-      hour, 0, 0, 0
-    );
-
-    latestDate = targetDate;
-
-    return {
-      ...article,
-      targetDate: targetDate.toISOString()
-    };
+    block.forEach(article => {
+      assignedArticles.push({
+        originalTitle: article.title,
+        generatedTitle: article.title,
+        url: article.url,
+        checked: false,
+        targetDate: date.toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        id: 0
+      });
+    });
   });
 
-  return assignedArticles;
+  // 3. DBに挿入
+  const insert = db.prepare(`
+    INSERT INTO manga_articles
+      (originalTitle, generatedTitle, url, checked, targetDate, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const insertedArticles: MangaArticle[] = [];
+  for (const article of assignedArticles) {
+    const result = insert.run(
+      article.originalTitle,
+      article.generatedTitle,
+      article.url,
+      article.checked ? 1 : 0,
+      article.targetDate,
+      article.createdAt,
+      article.updatedAt
+    );
+    insertedArticles.push({
+      ...article,
+      id: result.lastInsertRowid as number
+    });
+  }
+
+  return insertedArticles;
 }
+
