@@ -64,6 +64,10 @@ export async function PUT(request: Request) {
         updates.push('checked = ?');
         params.push(body.checked ? 1 : 0);
       }
+      if (body.generatedTitle !== undefined) {
+        updates.push('generatedTitle = ?');
+        params.push(body.generatedTitle);
+      }
       if (updates.length === 0) {
         return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
       }

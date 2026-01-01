@@ -33,6 +33,12 @@ db.exec(`
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS article_date_tags (
+    anchor_post_id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Add post_id column if not exists
@@ -77,6 +83,7 @@ export interface MangaArticle {
   originalTitle: string;
   generatedTitle: string | null;
   url: string;
+  post_id: number;
   targetDate: string | null;
   createdAt: string;
   updatedAt: string;
@@ -89,6 +96,12 @@ export interface AnimeArticle {
   url: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ArticleDateTag {
+  anchor_post_id: number;
+  date: string;
+  createdAt: string;
 }
 
 export default db;

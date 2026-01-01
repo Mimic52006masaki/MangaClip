@@ -45,5 +45,12 @@ export function insertScrapedArticles(scraped: ScrapedArticle[]) {
     )
   `);
   deleteOld.run();
+
+  // 孤立した日付タグを削除
+  const deleteOrphanedTags = db.prepare(`
+    DELETE FROM article_date_tags
+    WHERE anchor_post_id NOT IN (SELECT post_id FROM manga_articles)
+  `);
+  deleteOrphanedTags.run();
 }
 
