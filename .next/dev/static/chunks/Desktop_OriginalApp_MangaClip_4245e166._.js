@@ -14,18 +14,37 @@ var _s = __turbopack_context__.k.signature();
 ;
 function MangaTable() {
     _s();
+    // --- States ---
     const [articles, setArticles] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [dateTags, setDateTags] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [editingId, setEditingId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [editingTime, setEditingTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [editingDateId, setEditingDateId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [editingDate, setEditingDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [selectedIds, setSelectedIds] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const [generatingId, setGeneratingId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    // --- API Functions ---
     const fetchArticles = async ()=>{
         try {
-            const response = await fetch('/api/scrape/manga');
+            const response = await fetch('/api/scrape/manga?all=true');
             const data = await response.json();
             if (data.success) {
-                console.log('Fetched articles:', data.articles.length);
                 setArticles(data.articles);
             }
         } catch (error) {
             console.error('Error fetching articles:', error);
+        }
+    };
+    const fetchDateTags = async ()=>{
+        try {
+            const response = await fetch('/api/article_date_tags');
+            const data = await response.json();
+            if (data.success) {
+                setDateTags(data.tags);
+            }
+        } catch (error) {
+            console.error('Error fetching date tags:', error);
         }
     };
     const handleScrape = async ()=>{
@@ -36,7 +55,8 @@ function MangaTable() {
             });
             const data = await response.json();
             if (data.success) {
-                await fetchArticles(); // Refresh the list
+                await fetchArticles();
+                await fetchDateTags();
             }
         } catch (error) {
             console.error('Error scraping:', error);
@@ -47,13 +67,35 @@ function MangaTable() {
     const handleCopy = async (text)=>{
         try {
             await navigator.clipboard.writeText(text);
-            alert('Copied!');
+        // alert() の代わりになる通知UIが理想的ですが、ロジック維持のため残します
         } catch (error) {
-            alert('Failed to copy');
+            console.error('Failed to copy');
+        }
+    };
+    const handleUpdateTime = async (id, newTime)=>{
+        try {
+            const response = await fetch('/api/scrape/manga', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id,
+                    targetDate: newTime
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                await fetchArticles();
+                setEditingId(null);
+                setEditingTime('');
+            }
+        } catch (error) {
+            console.error('Update time error:', error);
         }
     };
     const handleDelete = async (id)=>{
-        if (!confirm('本当に削除しますか？')) return;
+        if (!window.confirm('本当に削除しますか？')) return;
         try {
             const response = await fetch('/api/scrape/manga', {
                 method: 'DELETE',
@@ -64,19 +106,77 @@ function MangaTable() {
                     id
                 })
             });
-            const data = await response.json();
-            if (data.success) {
-                await fetchArticles(); // Refresh the list
-                alert('削除しました');
-            } else {
-                alert('削除失敗: ' + data.error);
+            if ((await response.json()).success) {
+                await fetchArticles();
+                await fetchDateTags();
             }
         } catch (error) {
-            alert('削除失敗');
+            console.error('Delete error:', error);
+        }
+    };
+    const handleUpdateDate = async (postId, date)=>{
+        try {
+            const response = await fetch('/api/article_date_tags', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    anchor_post_id: postId,
+                    date
+                })
+            });
+            if ((await response.json()).success) {
+                await fetchDateTags();
+                setEditingDateId(null);
+                setEditingDate('');
+            }
+        } catch (error) {
+            console.error('Update date error:', error);
+        }
+    };
+    const handleDeleteDate = async (postId)=>{
+        if (!window.confirm('この日付を削除しますか？')) return;
+        try {
+            const response = await fetch('/api/article_date_tags', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    anchor_post_id: postId
+                })
+            });
+            if ((await response.json()).success) {
+                await fetchDateTags();
+            }
+        } catch (error) {
+            console.error('Delete date error:', error);
+        }
+    };
+    const handleGenerateTitle = async (id)=>{
+        setGeneratingId(id);
+        try {
+            const response = await fetch('/api/generate-title', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id
+                })
+            });
+            if ((await response.json()).success) {
+                await fetchArticles();
+            }
+        } catch (error) {
+            console.error('Generate title error:', error);
+        } finally{
+            setGeneratingId(null);
         }
     };
     const handleBulkDelete = async ()=>{
-        if (!confirm('全ての漫画記事を削除しますか？')) return;
+        if (!window.confirm('全ての漫画記事を削除しますか？')) return;
         try {
             const response = await fetch('/api/scrape/manga', {
                 method: 'DELETE',
@@ -87,269 +187,782 @@ function MangaTable() {
                     all: true
                 })
             });
-            const data = await response.json();
-            if (data.success) {
-                await fetchArticles(); // Refresh the list
-                alert(`${data.deleted}件削除しました`);
-            } else {
-                alert('削除失敗: ' + data.error);
+            if ((await response.json()).success) {
+                await fetchArticles();
+                await fetchDateTags();
             }
         } catch (error) {
-            alert('削除失敗');
+            console.error('Bulk delete error:', error);
+        }
+    };
+    const handleDeleteSelected = async ()=>{
+        if (selectedIds.size === 0) return;
+        if (!window.confirm(`${selectedIds.size}件の記事を削除しますか？`)) return;
+        try {
+            for (const id of selectedIds){
+                await fetch('/api/scrape/manga', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id
+                    })
+                });
+            }
+            setSelectedIds(new Set());
+            await fetchArticles();
+            await fetchDateTags();
+        } catch (error) {
+            console.error('Bulk selection delete error:', error);
+        }
+    };
+    const handleCopySelectedUrls = async ()=>{
+        if (selectedIds.size === 0) return;
+        const selectedArticles = articles.filter((article)=>selectedIds.has(article.id));
+        const urls = selectedArticles.map((article)=>article.url).join('\n');
+        try {
+            await navigator.clipboard.writeText(urls);
+        } catch (error) {
+            console.error('Copy URLs error:', error);
         }
     };
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "MangaTable.useEffect": ()=>{
             fetchArticles();
+            fetchDateTags();
         }
     }["MangaTable.useEffect"], []);
-    // Group by date
-    const groupedArticles = articles.reduce((groups, article)=>{
-        if (!article.targetDate) return groups;
-        const date = new Date(article.targetDate).toLocaleDateString('ja-JP');
-        if (!groups[date]) groups[date] = [];
-        groups[date].push(article);
-        return groups;
-    }, {});
-    console.log('Grouped articles keys:', Object.keys(groupedArticles));
-    console.log('Rendering MangaTable');
+    const dateTagMap = new Map();
+    dateTags.forEach((tag)=>dateTagMap.set(tag.anchor_post_id, tag.date));
+    const unreadArticles = articles.filter((article)=>!article.checked);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "p-4",
+        className: "flex min-h-screen w-full bg-[#f6f6f8] dark:bg-[#101622] font-sans",
         children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                className: "text-2xl font-bold mb-4",
-                children: "漫画まとめ速報"
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("link", {
+                href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+                rel: "stylesheet"
             }, void 0, false, {
                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                lineNumber: 114,
+                lineNumber: 236,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "mb-4 space-x-2",
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: handleScrape,
-                        disabled: loading,
-                        className: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400",
-                        children: loading ? '取得中...' : '記事取得'
-                    }, void 0, false, {
-                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                        lineNumber: 116,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: handleBulkDelete,
-                        className: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600",
-                        children: "全記事削除"
-                    }, void 0, false, {
-                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                        lineNumber: 123,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                lineNumber: 115,
-                columnNumber: 7
-            }, this),
-            Object.keys(groupedArticles).sort((a, b)=>new Date(b).getTime() - new Date(a).getTime()).map((date)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "mb-8",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                            className: "text-xl font-semibold mb-2",
-                            children: date
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                            lineNumber: 133,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            onClick: ()=>{
-                                const urls = groupedArticles[date].map((a)=>a.url).slice(0, 15);
-                                console.log('URLs to open:', urls);
-                                urls.forEach((url, index)=>{
-                                    console.log(`Opening URL ${index + 1}: ${url}`);
-                                    setTimeout(()=>window.open(url, '_blank'), index * 500);
-                                });
-                            },
-                            className: "mb-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600",
-                            children: "URL一括開き"
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                            lineNumber: 134,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
-                            className: "w-full border-collapse border border-gray-300",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-                                        className: "bg-gray-100",
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("aside", {
+                className: "fixed left-0 top-0 z-40 h-screen w-64 border-r border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-800 transition-transform sm:translate-x-0 hidden md:block",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex h-full flex-col justify-between p-4",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex flex-col gap-6",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-3 px-2",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center justify-center rounded-lg bg-[#135bec]/10 p-2 text-[#135bec]",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "material-symbols-outlined",
+                                            children: "menu_book"
+                                        }, void 0, false, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 244,
+                                            columnNumber: 17
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 243,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex flex-col",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "border border-gray-300 px-4 py-2",
-                                                children: "時間"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                                className: "text-slate-900 dark:text-white text-base font-bold leading-tight",
+                                                children: "Manga Manager"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 150,
+                                                lineNumber: 247,
                                                 columnNumber: 17
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "border border-gray-300 px-4 py-2",
-                                                children: "オリジナルタイトル"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-slate-500 dark:text-slate-400 text-xs",
+                                                children: "v2.5.0"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 151,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "border border-gray-300 px-4 py-2",
-                                                children: "URL"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 152,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "border border-gray-300 px-4 py-2",
-                                                children: "生成タイトル"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 153,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "border border-gray-300 px-4 py-2",
-                                                children: "操作"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                lineNumber: 154,
+                                                lineNumber: 248,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                        lineNumber: 149,
+                                        lineNumber: 246,
                                         columnNumber: 15
                                     }, this)
-                                }, void 0, false, {
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                lineNumber: 242,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
+                                className: "flex flex-col gap-1",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                        href: "/",
+                                        className: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "material-symbols-outlined text-xl",
+                                                children: "home"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 253,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                children: "ホーム"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 254,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 252,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                        href: "/backup",
+                                        className: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "material-symbols-outlined text-xl",
+                                                children: "cloud_download"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 257,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                children: "Backup Page"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 258,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 256,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                lineNumber: 251,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "mt-4",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                    href: "/anime",
+                                    className: "flex items-center gap-3 px-3 py-2.5 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "material-symbols-outlined text-xl",
+                                            children: "movie"
+                                        }, void 0, false, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 263,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-sm font-medium",
+                                            children: "アニメまとめCHへ"
+                                        }, void 0, false, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 264,
+                                            columnNumber: 17
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                    lineNumber: 148,
+                                    lineNumber: 262,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                lineNumber: 261,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                        lineNumber: 241,
+                        columnNumber: 11
+                    }, this)
+                }, void 0, false, {
+                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                    lineNumber: 240,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                lineNumber: 239,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
+                className: "flex-1 md:ml-64 flex flex-col min-h-screen",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
+                        className: "sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 dark:border-slate-800",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                className: "text-lg font-bold text-slate-900 dark:text-white",
+                                children: "漫画まとめ速報 管理"
+                            }, void 0, false, {
+                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                lineNumber: 274,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-2",
+                                children: [
+                                    selectedIds.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-2 mr-4 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: handleCopySelectedUrls,
+                                                className: "px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all",
+                                                children: "URLコピー"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 278,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: handleDeleteSelected,
+                                                className: "px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all",
+                                                children: [
+                                                    "選択削除 (",
+                                                    selectedIds.size,
+                                                    ")"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 279,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 277,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: handleScrape,
+                                        disabled: loading,
+                                        className: "flex h-10 items-center gap-2 px-4 rounded-lg bg-[#135bec] text-white text-sm font-bold hover:bg-[#135bec]/90 disabled:opacity-50",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: `material-symbols-outlined text-lg ${loading ? 'animate-spin' : ''}`,
+                                                children: "refresh"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 287,
+                                                columnNumber: 15
+                                            }, this),
+                                            loading ? '取得中...' : '記事取得'
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 282,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                lineNumber: 275,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                        lineNumber: 273,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex-1 overflow-y-auto p-6 md:p-8",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "mx-auto max-w-7xl flex flex-col gap-6",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+                                    className: "grid grid-cols-1 gap-4 sm:grid-cols-3",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-sm font-medium text-slate-500",
+                                                    children: "未処理の記事"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                    lineNumber: 299,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "mt-2 text-3xl font-bold text-slate-900 dark:text-white",
+                                                    children: unreadArticles.length
+                                                }, void 0, false, {
+                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                    lineNumber: 300,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 298,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-sm font-medium text-slate-500",
+                                                    children: "日付タグ数"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                    lineNumber: 303,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "mt-2 text-3xl font-bold text-slate-900 dark:text-white",
+                                                    children: dateTags.length
+                                                }, void 0, false, {
+                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                    lineNumber: 304,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 302,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: handleBulkDelete,
+                                                className: "w-full py-4 text-red-500 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors",
+                                                children: "全記事一括削除"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                lineNumber: 307,
+                                                columnNumber: 17
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                            lineNumber: 306,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                    lineNumber: 297,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
-                                    children: (()=>{
-                                        const sorted = groupedArticles[date].sort((a, b)=>{
-                                            if (!a.targetDate || !b.targetDate) return 0;
-                                            return new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime();
-                                        });
-                                        console.log(`Date ${date}: ${sorted.length} articles`);
-                                        return sorted;
-                                    })().map((article)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "overflow-x-auto",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
+                                            className: "w-full text-left text-sm",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "border border-gray-300 px-4 py-2",
-                                                    children: article.targetDate ? new Date(article.targetDate).toLocaleTimeString('ja-JP', {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    }) : ''
-                                                }, void 0, false, {
-                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 167,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "border border-gray-300 px-4 py-2",
-                                                    children: article.originalTitle
-                                                }, void 0, false, {
-                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 170,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "border border-gray-300 px-4 py-2",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                                                        href: article.url,
-                                                        target: "_blank",
-                                                        rel: "noopener noreferrer",
-                                                        className: "text-blue-500 underline",
-                                                        children: article.url
-                                                    }, void 0, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
+                                                    className: "bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                className: "p-4 w-10",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                    type: "checkbox",
+                                                                    onChange: (e)=>{
+                                                                        if (e.target.checked) setSelectedIds(new Set(unreadArticles.map((a)=>a.id)));
+                                                                        else setSelectedIds(new Set());
+                                                                    },
+                                                                    className: "h-4 w-4 rounded border-slate-300 text-[#135bec]"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                    lineNumber: 320,
+                                                                    columnNumber: 25
+                                                                }, this)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                lineNumber: 319,
+                                                                columnNumber: 23
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                className: "px-6 py-3 font-semibold",
+                                                                children: "元記事情報 / 生成タイトル"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                lineNumber: 329,
+                                                                columnNumber: 23
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                                className: "px-6 py-3 font-semibold text-right",
+                                                                children: "操作"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                lineNumber: 330,
+                                                                columnNumber: 23
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
                                                         fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                        lineNumber: 172,
+                                                        lineNumber: 318,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 171,
+                                                    lineNumber: 317,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "border border-gray-300 px-4 py-2",
-                                                    children: article.generatedTitle || article.originalTitle
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
+                                                    className: "divide-y divide-slate-200 dark:divide-slate-700",
+                                                    children: unreadArticles.map((article, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].Fragment, {
+                                                            children: [
+                                                                editingDateId === article.post_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                                    className: "bg-amber-50 dark:bg-amber-900/10",
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                        colSpan: 3,
+                                                                        className: "p-4",
+                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-amber-200",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "text-xs font-bold text-amber-700 uppercase",
+                                                                                    children: "日付設定"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 341,
+                                                                                    columnNumber: 33
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                                    type: "date",
+                                                                                    value: editingDate,
+                                                                                    onChange: (e)=>setEditingDate(e.target.value),
+                                                                                    className: "rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 342,
+                                                                                    columnNumber: 33
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                    onClick: ()=>handleUpdateDate(article.post_id, editingDate),
+                                                                                    className: "bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700",
+                                                                                    children: "保存"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 348,
+                                                                                    columnNumber: 33
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                    onClick: ()=>handleDeleteDate(article.post_id),
+                                                                                    className: "bg-red-50 text-red-600 px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-red-100",
+                                                                                    children: "タグ削除"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 349,
+                                                                                    columnNumber: 33
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                    onClick: ()=>setEditingDateId(null),
+                                                                                    className: "text-slate-400 text-xs font-bold ml-auto hover:text-slate-600",
+                                                                                    children: "閉じる"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 350,
+                                                                                    columnNumber: 33
+                                                                                }, this)
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                            lineNumber: 340,
+                                                                            columnNumber: 31
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                        lineNumber: 339,
+                                                                        columnNumber: 29
+                                                                    }, this)
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                    lineNumber: 338,
+                                                                    columnNumber: 27
+                                                                }, this),
+                                                                dateTagMap.has(article.post_id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                                    className: "bg-blue-50/50 dark:bg-blue-900/10",
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                        colSpan: 3,
+                                                                        className: "px-6 py-2 text-xs font-bold text-blue-600",
+                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "flex items-center gap-2",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "material-symbols-outlined text-sm",
+                                                                                    children: "calendar_month"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 361,
+                                                                                    columnNumber: 33
+                                                                                }, this),
+                                                                                dateTagMap.get(article.post_id)
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                            lineNumber: 360,
+                                                                            columnNumber: 31
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                        lineNumber: 359,
+                                                                        columnNumber: 29
+                                                                    }, this)
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                    lineNumber: 358,
+                                                                    columnNumber: 27
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                                    className: "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                            className: "p-4",
+                                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                                type: "checkbox",
+                                                                                checked: selectedIds.has(article.id),
+                                                                                onChange: (e)=>{
+                                                                                    const newSelected = new Set(selectedIds);
+                                                                                    if (e.target.checked) newSelected.add(article.id);
+                                                                                    else newSelected.delete(article.id);
+                                                                                    setSelectedIds(newSelected);
+                                                                                },
+                                                                                className: "h-4 w-4 rounded border-slate-300 text-[#135bec]"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                lineNumber: 371,
+                                                                                columnNumber: 29
+                                                                            }, this)
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                            lineNumber: 370,
+                                                                            columnNumber: 27
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                            className: "px-6 py-4",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "mb-1 text-xs text-slate-400 flex items-center gap-2",
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                            className: "font-bold text-slate-300",
+                                                                                            children: [
+                                                                                                "#",
+                                                                                                index + 1
+                                                                                            ]
+                                                                                        }, void 0, true, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 385,
+                                                                                            columnNumber: 31
+                                                                                        }, this),
+                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                                                                            href: article.url,
+                                                                                            target: "_blank",
+                                                                                            rel: "noreferrer",
+                                                                                            className: "hover:text-[#135bec] truncate max-w-xs",
+                                                                                            children: article.url
+                                                                                        }, void 0, false, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 386,
+                                                                                            columnNumber: 31
+                                                                                        }, this)
+                                                                                    ]
+                                                                                }, void 0, true, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 384,
+                                                                                    columnNumber: 29
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "font-medium text-slate-900 dark:text-white leading-tight mb-2",
+                                                                                    children: article.originalTitle
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 388,
+                                                                                    columnNumber: 29
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg text-[#135bec] font-bold border border-slate-100 dark:border-slate-700",
+                                                                                    children: article.generatedTitle || "※ AI未生成"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                    lineNumber: 391,
+                                                                                    columnNumber: 29
+                                                                                }, this)
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                            lineNumber: 383,
+                                                                            columnNumber: 27
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                            className: "px-6 py-4 text-right",
+                                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-center justify-end gap-1",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        onClick: ()=>handleGenerateTitle(article.id),
+                                                                                        disabled: generatingId === article.id,
+                                                                                        className: `p-2 rounded-lg ${generatingId === article.id ? 'animate-spin text-slate-300' : 'text-[#135bec] hover:bg-[#135bec]/10'}`,
+                                                                                        title: "AIタイトル生成",
+                                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                            className: "material-symbols-outlined text-xl",
+                                                                                            children: "auto_fix_high"
+                                                                                        }, void 0, false, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 403,
+                                                                                            columnNumber: 33
+                                                                                        }, this)
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                        lineNumber: 397,
+                                                                                        columnNumber: 31
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        onClick: ()=>{
+                                                                                            setEditingDateId(article.post_id);
+                                                                                            setEditingDate(dateTagMap.get(article.post_id) || '');
+                                                                                        },
+                                                                                        className: "p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg",
+                                                                                        title: "日付タグ設定",
+                                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                            className: "material-symbols-outlined text-xl",
+                                                                                            children: "edit_calendar"
+                                                                                        }, void 0, false, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 413,
+                                                                                            columnNumber: 33
+                                                                                        }, this)
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                        lineNumber: 405,
+                                                                                        columnNumber: 31
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        onClick: ()=>handleCopy(article.generatedTitle || article.originalTitle),
+                                                                                        className: "p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg",
+                                                                                        title: "コピー",
+                                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                            className: "material-symbols-outlined text-xl",
+                                                                                            children: "content_copy"
+                                                                                        }, void 0, false, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 420,
+                                                                                            columnNumber: 33
+                                                                                        }, this)
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                        lineNumber: 415,
+                                                                                        columnNumber: 31
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        onClick: ()=>handleDelete(article.id),
+                                                                                        className: "p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg",
+                                                                                        title: "削除",
+                                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                            className: "material-symbols-outlined text-xl",
+                                                                                            children: "delete"
+                                                                                        }, void 0, false, {
+                                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                            lineNumber: 427,
+                                                                                            columnNumber: 33
+                                                                                        }, this)
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                        lineNumber: 422,
+                                                                                        columnNumber: 31
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                                lineNumber: 396,
+                                                                                columnNumber: 29
+                                                                            }, this)
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                            lineNumber: 395,
+                                                                            columnNumber: 27
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                                    lineNumber: 369,
+                                                                    columnNumber: 25
+                                                                }, this)
+                                                            ]
+                                                        }, article.id, true, {
+                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                                            lineNumber: 335,
+                                                            columnNumber: 23
+                                                        }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 176,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "border border-gray-300 px-4 py-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>handleCopy(article.generatedTitle || article.originalTitle),
-                                                            className: "mr-2 px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600",
-                                                            children: "コピー"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                            lineNumber: 178,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>handleDelete(article.id),
-                                                            className: "px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600",
-                                                            children: "削除"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                            lineNumber: 184,
-                                                            columnNumber: 21
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                                    lineNumber: 177,
+                                                    lineNumber: 333,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
-                                        }, article.id, true, {
+                                        }, void 0, true, {
                                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                            lineNumber: 166,
+                                            lineNumber: 316,
                                             columnNumber: 17
-                                        }, this))
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                                        lineNumber: 315,
+                                        columnNumber: 15
+                                    }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                                    lineNumber: 157,
+                                    lineNumber: 314,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                            lineNumber: 147,
+                            lineNumber: 294,
                             columnNumber: 11
                         }, this)
-                    ]
-                }, date, true, {
-                    fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-                    lineNumber: 132,
-                    columnNumber: 9
-                }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                        lineNumber: 293,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
+                lineNumber: 272,
+                columnNumber: 7
+            }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Desktop/OriginalApp/MangaClip/components/MangaTable.tsx",
-        lineNumber: 113,
+        lineNumber: 235,
         columnNumber: 5
     }, this);
 }
-_s(MangaTable, "0DF3MFnR1MR9A2ZHal7d8m8mp1s=");
+_s(MangaTable, "PDu3x9avLYXBKoEP7b+vWnG1rMk=");
 _c = MangaTable;
 var _c;
 __turbopack_context__.k.register(_c, "MangaTable");

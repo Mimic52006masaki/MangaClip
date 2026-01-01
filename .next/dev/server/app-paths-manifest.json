@@ -1,7 +1,10 @@
 {
   "/anime/page": "app/anime/page.js",
+  "/api/article_date_tags/route": "app/api/article_date_tags/route.js",
+  "/api/generate-title/route": "app/api/generate-title/route.js",
   "/api/scrape/anime/route": "app/api/scrape/anime/route.js",
   "/api/scrape/manga/route": "app/api/scrape/manga/route.js",
+  "/backup/page": "app/backup/page.js",
   "/manga/page": "app/manga/page.js",
   "/page": "app/page.js"
 }

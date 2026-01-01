@@ -263,6 +263,8 @@ module.exports = mod;
 __turbopack_context__.s([
     "scrapeAnimeArticles",
     ()=>scrapeAnimeArticles,
+    "scrapeArticlesFromUrl",
+    ()=>scrapeArticlesFromUrl,
     "scrapeMangaArticles",
     ()=>scrapeMangaArticles
 ]);
@@ -309,7 +311,9 @@ async function scrapeMangaArticles() {
                 }
             }
         });
-        return articles;
+        // Deduplicate by URL
+        const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+        return uniqueArticles;
     } catch (error) {
         console.error('Error scraping manga articles:', error);
         throw new Error('Failed to scrape manga articles');
@@ -353,10 +357,107 @@ async function scrapeAnimeArticles() {
                 }
             }
         });
-        return articles;
+        // Deduplicate by URL
+        const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+        return uniqueArticles;
     } catch (error) {
         console.error('Error scraping anime articles:', error);
         throw new Error('Failed to scrape anime articles');
+    }
+}
+async function scrapeArticlesFromUrl(siteType, url, filterUrl) {
+    try {
+        const response = await __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+        const $ = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$cheerio$2f$dist$2f$esm$2f$load$2d$parse$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["load"](response.data);
+        const articles = [];
+        // Try multiple selectors for titles
+        const selectors = [
+            'table.table01 tr:has(hr) td.title',
+            'h1',
+            'h2',
+            'h3',
+            '.title',
+            '.article-title',
+            'title'
+        ];
+        // First try the original method for anaguro.yanen.org
+        const hrPosts = [];
+        $('table.table01 tr').each((_, row)=>{
+            if ($(row).find('hr').length > 0) {
+                hrPosts.push(row);
+            }
+        });
+        hrPosts.forEach((titles)=>{
+            const titleElem = $(titles).find('td.title');
+            const aTag = $(titles).find('a.title');
+            if (titleElem.length > 0 && aTag.length > 0) {
+                const title = titleElem.text().trim();
+                const href = aTag.attr('href');
+                if (title && href) {
+                    let fullUrl = href;
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
+                        fullUrl = href.replace('https://anaguro.yanen.org/', '');
+                    }
+                    articles.push({
+                        title,
+                        url: fullUrl.trim()
+                    });
+                }
+            }
+        });
+        // If no articles found, try general selectors
+        if (articles.length === 0) {
+            const generalSelectors = [
+                'h1',
+                'h2',
+                'h3',
+                '.title',
+                '.article-title'
+            ];
+            generalSelectors.forEach((selector)=>{
+                $(selector).each((_, elem)=>{
+                    const title = $(elem).text().trim();
+                    if (title) {
+                        const link = $(elem).find('a').attr('href') || $(elem).closest('a').attr('href') || url;
+                        let fullUrl = link;
+                        if (fullUrl.startsWith('./cnt.cgi?')) {
+                            const urlA = fullUrl.split('=')[1];
+                            if (urlA) fullUrl = urlA;
+                        } else if (fullUrl.includes('anaguro.yanen.org/')) {
+                            fullUrl = fullUrl.replace('https://anaguro.yanen.org/', '');
+                        }
+                        articles.push({
+                            title,
+                            url: fullUrl.trim()
+                        });
+                    }
+                });
+            });
+            // Deduplicate
+            const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+            articles.splice(0, articles.length, ...uniqueArticles);
+        }
+        // Fallback: use page title if no articles found
+        if (articles.length === 0) {
+            const pageTitle = $('title').text().trim();
+            if (pageTitle) {
+                articles.push({
+                    title: pageTitle,
+                    url: url
+                });
+            }
+        }
+        return articles;
+    } catch (error) {
+        console.error('Error scraping articles from URL:', error);
+        throw new Error('Failed to scrape articles from URL');
     }
 }
 }),
@@ -400,54 +501,90 @@ db.exec(`
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS article_date_tags (
+    anchor_post_id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
+// Add post_id column if not exists
+try {
+    db.exec(`ALTER TABLE manga_articles ADD COLUMN post_id INTEGER;`);
+    console.log('Added post_id column');
+} catch (error) {
+    // Column might already exist, ignore error
+    console.log('post_id column already exists or error adding:', error?.message);
+}
+// Add unique index for post_id if not exists
+try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_manga_articles_post_id ON manga_articles(post_id);`);
+    console.log('Created post_id index');
+} catch (error) {
+    console.log('Index creation error:', error?.message);
+}
 console.log('Tables created successfully');
+// Populate existing data with post_id if not set
+try {
+    const rows = db.prepare('SELECT id, url FROM manga_articles WHERE post_id IS NULL').all();
+    if (rows.length > 0) {
+        const update = db.prepare('UPDATE manga_articles SET post_id = ? WHERE id = ?');
+        for (const row of rows){
+            const match = row.url.match(/\/post\/(\d+)\//);
+            if (match) {
+                update.run(Number(match[1]), row.id);
+            }
+        }
+        console.log(`Populated post_id for ${rows.length} existing rows`);
+    }
+} catch (error) {
+    console.log('Error populating post_id:', error?.message);
+}
 const __TURBOPACK__default__export__ = db;
 }),
 "[project]/Desktop/OriginalApp/MangaClip/lib/assignTargetDate.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
-    "assignTargetDates",
-    ()=>assignTargetDates
+    "insertScrapedArticles",
+    ()=>insertScrapedArticles
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/OriginalApp/MangaClip/lib/database.ts [app-route] (ecmascript)");
 ;
-function assignTargetDates(newArticles) {
-    console.log(`Assigning target dates for ${newArticles.length} articles`);
-    // Get the latest targetDate from database
-    const row = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('SELECT targetDate FROM manga_articles WHERE targetDate IS NOT NULL ORDER BY targetDate DESC LIMIT 1').get();
-    const latestTargetDate = row?.targetDate || null;
-    console.log('Latest targetDate from database:', latestTargetDate);
-    let latestDate;
-    if (latestTargetDate) {
-        latestDate = new Date(latestTargetDate);
-        console.log('Using latest date from storage:', latestDate.toISOString());
-    } else {
-        // If no articles, start from today 21:00
-        latestDate = new Date();
-        latestDate.setHours(21, 0, 0, 0);
-        console.log('No articles in storage, starting from today 21:00:', latestDate.toISOString());
+function extractPostId(url) {
+    const match = url.match(/\/post\/(\d+)\//);
+    if (!match) throw new Error(`Invalid url: ${url}`);
+    return Number(match[1]);
+}
+function insertScrapedArticles(scraped) {
+    const insert = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
+    INSERT OR IGNORE INTO manga_articles
+      (post_id, originalTitle, generatedTitle, url, checked, targetDate, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, 0, ?, ?, ?)
+  `);
+    const now = new Date().toISOString();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    for (const article of scraped){
+        insert.run(extractPostId(article.url), article.title, article.title, article.url, today.toISOString(), now, now);
     }
-    // Assign targetDates in reverse order (newest first)
-    const assignedArticles = newArticles.map((article)=>{
-        let hour = latestDate.getHours() - 1;
-        if (hour < 7) {
-            // Move to previous day 21:00
-            const prevDay = new Date(latestDate);
-            prevDay.setDate(prevDay.getDate() - 1);
-            prevDay.setHours(21, 0, 0, 0);
-            latestDate = prevDay;
-            hour = 21;
-        }
-        const targetDate = new Date(latestDate.getFullYear(), latestDate.getMonth(), latestDate.getDate(), hour, 0, 0, 0);
-        latestDate = targetDate;
-        return {
-            ...article,
-            targetDate: targetDate.toISOString()
-        };
-    });
-    return assignedArticles;
+    // 件数制限: 300件を超えたら古い順に削除
+    const deleteOld = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
+    DELETE FROM manga_articles
+    WHERE post_id < (
+      SELECT post_id
+      FROM manga_articles
+      ORDER BY post_id DESC
+      LIMIT 1 OFFSET 299
+    )
+  `);
+    deleteOld.run();
+    // 孤立した日付タグを削除
+    const deleteOrphanedTags = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
+    DELETE FROM article_date_tags
+    WHERE anchor_post_id NOT IN (SELECT post_id FROM manga_articles)
+  `);
+    deleteOrphanedTags.run();
 }
 }),
 "[project]/Desktop/OriginalApp/MangaClip/app/api/scrape/manga/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
@@ -459,7 +596,9 @@ __turbopack_context__.s([
     "GET",
     ()=>GET,
     "POST",
-    ()=>POST
+    ()=>POST,
+    "PUT",
+    ()=>PUT
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/OriginalApp/MangaClip/node_modules/next/server.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$scraper$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/OriginalApp/MangaClip/lib/scraper.ts [app-route] (ecmascript)");
@@ -491,34 +630,15 @@ async function POST() {
                 articles: []
             });
         }
-        // Assign target dates
-        console.log('Assigning target dates');
-        const articlesWithTargetDate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$assignTargetDate$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["assignTargetDates"])(newArticles.map((article)=>({
-                originalTitle: article.title,
-                generatedTitle: null,
-                url: article.url,
-                targetDate: '',
-                checked: false
-            })));
-        console.log('Target dates assigned, count:', articlesWithTargetDate.length);
-        // Insert new articles
-        const insertStmt = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
-      INSERT INTO manga_articles (originalTitle, generatedTitle, url, targetDate, checked)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-        const insertedArticles = [];
-        for (const article of articlesWithTargetDate){
-            console.log('Inserting article:', article.originalTitle.substring(0, 50));
-            const result = insertStmt.run(article.originalTitle, article.generatedTitle, article.url, article.targetDate, article.checked ? 1 : 0);
-            const insertedArticle = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('SELECT * FROM manga_articles WHERE id = ?').get(result.lastInsertRowid);
-            insertedArticles.push(insertedArticle);
-        }
+        // Insert new articles with assigned target dates
+        console.log('Inserting new articles');
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$assignTargetDate$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["insertScrapedArticles"])(newArticles);
         console.log('Manga scrape completed successfully');
         return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             scraped: scrapedArticles.length,
             new: newArticles.length,
-            articles: insertedArticles
+            articles: []
         });
     } catch (error) {
         console.error('Error in manga scrape:', error);
@@ -530,10 +650,77 @@ async function POST() {
         });
     }
 }
+async function PUT(request) {
+    try {
+        const body = await request.json();
+        if (body.id) {
+            const updates = [];
+            const params = [];
+            if (body.targetDate !== undefined) {
+                updates.push('targetDate = ?');
+                params.push(body.targetDate);
+            }
+            if (body.checked !== undefined) {
+                updates.push('checked = ?');
+                params.push(body.checked ? 1 : 0);
+            }
+            if (body.generatedTitle !== undefined) {
+                updates.push('generatedTitle = ?');
+                params.push(body.generatedTitle);
+            }
+            if (updates.length === 0) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    success: false,
+                    error: 'No fields to update'
+                }, {
+                    status: 400
+                });
+            }
+            updates.push("updatedAt = datetime('now')");
+            params.push(body.id);
+            const result = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`UPDATE manga_articles SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+            if (result.changes === 0) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    success: false,
+                    error: 'Article not found or no changes made'
+                }, {
+                    status: 404
+                });
+            }
+            return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                success: true
+            });
+        } else {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                success: false,
+                error: 'Invalid request: id required'
+            }, {
+                status: 400
+            });
+        }
+    } catch (error) {
+        console.error('Error updating article:', error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            success: false,
+            error: 'Failed to update article'
+        }, {
+            status: 500
+        });
+    }
+}
 async function DELETE(request) {
     try {
         const body = await request.json();
         if (body.all) {
+            // Bulk delete all manga articles and associated date tags
+            // First get all post_ids that will be deleted
+            const articlesToDelete = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('SELECT post_id FROM manga_articles').all();
+            const postIds = articlesToDelete.map((a)=>a.post_id);
+            // Delete associated date tags
+            if (postIds.length > 0) {
+                const placeholders = postIds.map(()=>'?').join(',');
+                __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`DELETE FROM article_date_tags WHERE anchor_post_id IN (${placeholders})`).run(...postIds);
+            }
             // Bulk delete all manga articles
             const result = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('DELETE FROM manga_articles').run();
             return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
@@ -541,8 +728,18 @@ async function DELETE(request) {
                 deleted: result.changes
             });
         } else if (body.id) {
-            // Delete single article
-            const result = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('DELETE FROM manga_articles WHERE id = ?').run(body.id);
+            // Get post_id before marking as checked
+            const article = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('SELECT post_id FROM manga_articles WHERE id = ?').get(body.id);
+            if (!article) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    success: false,
+                    error: 'Article not found'
+                }, {
+                    status: 404
+                });
+            }
+            // Mark single article as checked (hide from UI)
+            const result = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare("UPDATE manga_articles SET checked = 1, updatedAt = datetime('now') WHERE id = ?").run(body.id);
             if (result.changes === 0) {
                 return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                     success: false,
@@ -551,6 +748,8 @@ async function DELETE(request) {
                     status: 404
                 });
             }
+            // Remove associated date tags
+            __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare('DELETE FROM article_date_tags WHERE anchor_post_id = ?').run(article.post_id);
             return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 success: true
             });
@@ -563,23 +762,46 @@ async function DELETE(request) {
             });
         }
     } catch (error) {
-        console.error('Error deleting article:', error);
+        console.error('Error updating article:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: false,
-            error: 'Failed to delete article'
+            error: 'Failed to update article'
         }, {
             status: 500
         });
     }
 }
-async function GET() {
+async function GET(request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const all = searchParams.get('all') === 'true';
+        if (all) {
+            const articles = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
+        SELECT *
+        FROM manga_articles
+        ORDER BY post_id DESC;
+      `).all();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                success: true,
+                articles
+            });
+        }
+        const limit = parseInt(searchParams.get('limit') || '15', 10);
+        if (isNaN(limit) || limit <= 0 || limit > 100) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                success: false,
+                error: 'Invalid limit parameter'
+            }, {
+                status: 400
+            });
+        }
         const articles = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$lib$2f$database$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].prepare(`
-      SELECT * FROM manga_articles
-      ORDER BY targetDate DESC, targetDate ASC
-    `).all();
-        console.log('Articles count:', articles.length);
-        console.log('First article targetDate:', articles[0]?.targetDate);
+      SELECT *
+      FROM manga_articles
+      WHERE checked = 0
+      ORDER BY post_id DESC
+      LIMIT ?;
+    `).all(limit);
         return __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             articles

@@ -50,9 +50,10 @@ export default function AnimeTable() {
   };
 
   const handleCopyAll = async () => {
-    const text = articles.map(a => `${a.title},${a.url}`).join('\n');
+    const text = articles.map(a => `${a.title}\t${a.url}`).join('\n');
     try {
       await navigator.clipboard.writeText(text);
+      alert("コピーしました")
     } catch (error) {
       console.error('Copy error:', error);
     }

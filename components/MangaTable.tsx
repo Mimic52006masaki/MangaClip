@@ -227,6 +227,7 @@ export default function MangaTable() {
           body: JSON.stringify({ id })
         });
       }
+      alert(`${selectedIds.size}件の記事を削除しました。`);
       setSelectedIds(new Set());
       await fetchArticles();
       await fetchDateTags();
@@ -241,6 +242,7 @@ export default function MangaTable() {
     const urls = selectedArticles.map(article => article.url).join('\n');
     try {
       await navigator.clipboard.writeText(urls);
+      alert(`${selectedArticles.length}件のURLをクリップボードにコピーしました。`);
     } catch (error) {
       console.error('Copy URLs error:', error);
     }
@@ -252,6 +254,7 @@ export default function MangaTable() {
     const titles = selectedArticles.map(article => article.originalTitle).join('\n');
     try {
       await navigator.clipboard.writeText(titles);
+      alert(`${selectedArticles.length}件のオリジナルタイトルをクリップボードにコピーしました。`);
     } catch (error) {
       console.error('Copy original titles error:', error);
     }
@@ -262,15 +265,18 @@ export default function MangaTable() {
     if (!window.confirm(`${selectedIds.size}件の記事のタイトルを一括生成しますか？`)) return;
 
     const selectedIdsArray = Array.from(selectedIds);
+    let successCount = 0;
     for (const id of selectedIdsArray) {
       try {
         await handleGenerateTitle(id);
+        successCount++;
         // 少し待機してAPI負荷を下げる
         await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
         console.error(`Failed to generate title for ${id}:`, error);
       }
     }
+    alert(`${successCount}件のタイトル生成が完了しました。`);
     setSelectedIds(new Set());
   };
 
@@ -407,6 +413,11 @@ export default function MangaTable() {
                                   type="text"
                                   value={editingTitle}
                                   onChange={(e) => setEditingTitle(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleUpdateTitle(article.id, editingTitle);
+                                    }
+                                  }}
                                   className="flex-1 rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
                                   placeholder="新しいタイトルを入力"
                                 />

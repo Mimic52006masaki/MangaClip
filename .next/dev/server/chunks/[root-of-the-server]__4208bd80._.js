@@ -263,6 +263,8 @@ module.exports = mod;
 __turbopack_context__.s([
     "scrapeAnimeArticles",
     ()=>scrapeAnimeArticles,
+    "scrapeArticlesFromUrl",
+    ()=>scrapeArticlesFromUrl,
     "scrapeMangaArticles",
     ()=>scrapeMangaArticles
 ]);
@@ -295,16 +297,23 @@ async function scrapeMangaArticles() {
                 const title = titleElem.text().trim();
                 const href = aTag.attr('href');
                 if (title && href) {
-                    const urlA = href.replace('./cnt.cgi?1778=', '');
-                    const fullUrl = 'https://anaguro.yanen.org/' + urlA;
+                    let fullUrl = href;
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
+                        fullUrl = href.replace('https://anaguro.yanen.org/', '');
+                    }
                     articles.push({
                         title,
-                        url: fullUrl
+                        url: fullUrl.trim()
                     });
                 }
             }
         });
-        return articles;
+        // Deduplicate by URL
+        const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+        return uniqueArticles;
     } catch (error) {
         console.error('Error scraping manga articles:', error);
         throw new Error('Failed to scrape manga articles');
@@ -334,19 +343,121 @@ async function scrapeAnimeArticles() {
                 const title = titleElem.text().trim();
                 const href = aTag.attr('href');
                 if (title && href) {
-                    const urlA = href.replace('./cnt.cgi?1996=', '');
-                    const fullUrl = 'https://anaguro.yanen.org/' + urlA;
+                    let fullUrl = href;
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
+                        fullUrl = href.replace('https://anaguro.yanen.org/', '');
+                    }
                     articles.push({
                         title,
-                        url: fullUrl
+                        url: fullUrl.trim()
                     });
                 }
             }
         });
-        return articles;
+        // Deduplicate by URL
+        const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+        return uniqueArticles;
     } catch (error) {
         console.error('Error scraping anime articles:', error);
         throw new Error('Failed to scrape anime articles');
+    }
+}
+async function scrapeArticlesFromUrl(siteType, url, filterUrl) {
+    try {
+        const response = await __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+        const $ = __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$OriginalApp$2f$MangaClip$2f$node_modules$2f$cheerio$2f$dist$2f$esm$2f$load$2d$parse$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["load"](response.data);
+        const articles = [];
+        // Try multiple selectors for titles
+        const selectors = [
+            'table.table01 tr:has(hr) td.title',
+            'h1',
+            'h2',
+            'h3',
+            '.title',
+            '.article-title',
+            'title'
+        ];
+        // First try the original method for anaguro.yanen.org
+        const hrPosts = [];
+        $('table.table01 tr').each((_, row)=>{
+            if ($(row).find('hr').length > 0) {
+                hrPosts.push(row);
+            }
+        });
+        hrPosts.forEach((titles)=>{
+            const titleElem = $(titles).find('td.title');
+            const aTag = $(titles).find('a.title');
+            if (titleElem.length > 0 && aTag.length > 0) {
+                const title = titleElem.text().trim();
+                const href = aTag.attr('href');
+                if (title && href) {
+                    let fullUrl = href;
+                    if (href.startsWith('./cnt.cgi?')) {
+                        const urlA = href.split('=')[1];
+                        if (urlA) fullUrl = urlA;
+                    } else if (href.includes('anaguro.yanen.org/')) {
+                        fullUrl = href.replace('https://anaguro.yanen.org/', '');
+                    }
+                    articles.push({
+                        title,
+                        url: fullUrl.trim()
+                    });
+                }
+            }
+        });
+        // If no articles found, try general selectors
+        if (articles.length === 0) {
+            const generalSelectors = [
+                'h1',
+                'h2',
+                'h3',
+                '.title',
+                '.article-title'
+            ];
+            generalSelectors.forEach((selector)=>{
+                $(selector).each((_, elem)=>{
+                    const title = $(elem).text().trim();
+                    if (title) {
+                        const link = $(elem).find('a').attr('href') || $(elem).closest('a').attr('href') || url;
+                        let fullUrl = link;
+                        if (fullUrl.startsWith('./cnt.cgi?')) {
+                            const urlA = fullUrl.split('=')[1];
+                            if (urlA) fullUrl = urlA;
+                        } else if (fullUrl.includes('anaguro.yanen.org/')) {
+                            fullUrl = fullUrl.replace('https://anaguro.yanen.org/', '');
+                        }
+                        articles.push({
+                            title,
+                            url: fullUrl.trim()
+                        });
+                    }
+                });
+            });
+            // Deduplicate
+            const uniqueArticles = articles.filter((article, index, self)=>index === self.findIndex((a)=>a.url === article.url));
+            articles.splice(0, articles.length, ...uniqueArticles);
+        }
+        // Fallback: use page title if no articles found
+        if (articles.length === 0) {
+            const pageTitle = $('title').text().trim();
+            if (pageTitle) {
+                articles.push({
+                    title: pageTitle,
+                    url: url
+                });
+            }
+        }
+        return articles;
+    } catch (error) {
+        console.error('Error scraping articles from URL:', error);
+        throw new Error('Failed to scrape articles from URL');
     }
 }
 }),
@@ -390,8 +501,45 @@ db.exec(`
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS article_date_tags (
+    anchor_post_id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
+// Add post_id column if not exists
+try {
+    db.exec(`ALTER TABLE manga_articles ADD COLUMN post_id INTEGER;`);
+    console.log('Added post_id column');
+} catch (error) {
+    // Column might already exist, ignore error
+    console.log('post_id column already exists or error adding:', error?.message);
+}
+// Add unique index for post_id if not exists
+try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_manga_articles_post_id ON manga_articles(post_id);`);
+    console.log('Created post_id index');
+} catch (error) {
+    console.log('Index creation error:', error?.message);
+}
 console.log('Tables created successfully');
+// Populate existing data with post_id if not set
+try {
+    const rows = db.prepare('SELECT id, url FROM manga_articles WHERE post_id IS NULL').all();
+    if (rows.length > 0) {
+        const update = db.prepare('UPDATE manga_articles SET post_id = ? WHERE id = ?');
+        for (const row of rows){
+            const match = row.url.match(/\/post\/(\d+)\//);
+            if (match) {
+                update.run(Number(match[1]), row.id);
+            }
+        }
+        console.log(`Populated post_id for ${rows.length} existing rows`);
+    }
+} catch (error) {
+    console.log('Error populating post_id:', error?.message);
+}
 const __TURBOPACK__default__export__ = db;
 }),
 "[project]/Desktop/OriginalApp/MangaClip/app/api/scrape/anime/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
