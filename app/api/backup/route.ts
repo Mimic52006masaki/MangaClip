@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { storage } from '@/lib/storage';
 import JSZip from 'jszip';
+import db from '@/lib/database';
 
 export async function GET() {
   try {
@@ -48,7 +49,7 @@ export async function POST() {
 
     const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
 
-    return new NextResponse(zipContent, {
+    return new NextResponse(new Uint8Array(zipContent), {
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename=backup_${new Date().toISOString().slice(0, 10)}.zip`

@@ -463,141 +463,306 @@ export default function MangaTable() {
                 </div>
               </div>
               <div className="divide-y divide-slate-100 dark:divide-slate-800">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                    <tr>
-                      <th className="p-4 w-10">
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                      <tr>
+                        <th className="p-4 w-10">
+                          <input
+                            type="checkbox"
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedIds(new Set(unreadArticles.map(a => a.id)));
+                              else setSelectedIds(new Set());
+                            }}
+                            className="h-4 w-4 rounded border-slate-300 text-[#135bec]"
+                          />
+                        </th>
+                        <th className="px-6 py-3 font-semibold">元記事情報 / 生成タイトル</th>
+                        <th className="px-6 py-3 font-semibold text-right">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                      {unreadArticles.map((article, index) => (
+                        <React.Fragment key={article.id}>
+                          {/* Inline Edit for Title */}
+                          {editingTitleId === article.id && (
+                            <tr className="bg-green-50 dark:bg-green-900/10">
+                              <td colSpan={3} className="p-4">
+                                <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-green-200">
+                                  <span className="text-xs font-bold text-green-700 uppercase">タイトル編集</span>
+                                  <input
+                                    type="text"
+                                    value={editingTitle}
+                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleUpdateTitle(article.id, editingTitle);
+                                      }
+                                    }}
+                                    className="flex-1 rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
+                                    placeholder="新しいタイトルを入力"
+                                  />
+                                  <button onClick={() => handleUpdateTitle(article.id, editingTitle)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
+                                  <button onClick={() => setEditingTitleId(null)} className="text-slate-400 text-xs font-bold ml-auto hover:text-slate-600">閉じる</button>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+
+                          {/* Inline Edit for Date */}
+                          {editingDateId === article.post_id && (
+                            <tr className="bg-amber-50 dark:bg-amber-900/10">
+                              <td colSpan={3} className="p-4">
+                                <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-amber-200">
+                                  <span className="text-xs font-bold text-amber-700 uppercase">日付設定</span>
+                                  <input
+                                    type="date"
+                                    value={editingDate}
+                                    onChange={(e) => setEditingDate(e.target.value)}
+                                    className="rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
+                                  />
+                                  <button onClick={() => handleUpdateDate(article.post_id, editingDate)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
+                                  <button onClick={() => handleDeleteDate(article.post_id)} className="bg-red-50 text-red-600 px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-red-100">タグ削除</button>
+                                  <button onClick={() => setEditingDateId(null)} className="text-slate-400 text-xs font-bold ml-auto hover:text-slate-600">閉じる</button>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+
+                          {/* Article Row */}
+                          <tr
+                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                            onClick={(event) => handleRowClick(article.id, index, event)}
+                          >
+                            <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.has(article.id)}
+                                onChange={(e) => {
+                                  const newSelected = new Set(selectedIds);
+                                  if (e.target.checked) newSelected.add(article.id);
+                                  else newSelected.delete(article.id);
+                                  setSelectedIds(newSelected);
+                                }}
+                                className="h-4 w-4 rounded border-slate-300 text-[#135bec]"
+                              />
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="mb-1 text-xs text-slate-400 flex items-center gap-2">
+                                <span className="font-bold text-slate-300">#{index + 1}</span>
+                                <a href={article.url} target="_blank" rel="noreferrer" className="hover:text-[#135bec] truncate max-w-xs">{article.url}</a>
+                              </div>
+                              <div className="font-medium text-slate-900 dark:text-white leading-tight mb-2">
+                                {article.originalTitle}
+                              </div>
+                              <div className={`p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg font-bold border border-slate-100 dark:border-slate-700 ${article.generatedTitle ? (article.generatedTitle !== article.originalTitle ? 'text-green-600' : 'text-slate-500') : 'text-[#135bec]'}`}>
+                                {article.generatedTitle || "※ AI未生成"}
+                                {article.generatedTitle && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingTitleId(article.id);
+                                      setEditingTitle(article.generatedTitle!);
+                                    }}
+                                    className="ml-2 text-xs text-slate-400 hover:text-slate-600"
+                                    title="タイトル編集"
+                                  >
+                                    <span className="material-symbols-outlined text-base">edit</span>
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleGenerateTitle(article.id)}
+                                  disabled={generatingId === article.id}
+                                  className={`p-2 rounded-lg ${generatingId === article.id ? 'animate-spin text-slate-300' : article.generatedTitle ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-[#135bec] hover:bg-[#135bec]/10'}`}
+                                  title={article.generatedTitle ? "AIタイトル再生成" : "AIタイトル生成"}
+                                >
+                                  <span className="material-symbols-outlined text-xl">{article.generatedTitle ? 'auto_fix_high' : 'auto_fix_high'}</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setEditingDateId(article.post_id);
+                                    setEditingDate(dateTagMap.get(article.post_id) || '');
+                                  }}
+                                  className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                                  title="日付タグ設定"
+                                >
+                                  <span className="material-symbols-outlined text-xl">{copiedButtonId === `date-${article.post_id}` ? 'check_circle' : 'bookmark'}</span>
+                                </button>
+                                <button
+                                  onClick={() => handleCopy(article.originalTitle, `copy-original-${article.id}`)}
+                                  className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                                  title="オリジナルタイトルをコピー"
+                                >
+                                  <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-original-${article.id}` ? 'check_circle' : 'content_copy'}</span>
+                                </button>
+                                <button
+                                  onClick={() => handleCopy(article.generatedTitle || article.originalTitle, `copy-generated-${article.id}`)}
+                                  className={`p-2 rounded-lg ${article.generatedTitle ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-slate-300 cursor-not-allowed'}`}
+                                  title={article.generatedTitle ? "生成タイトルをコピー" : "生成タイトルなし"}
+                                  disabled={!article.generatedTitle}
+                                >
+                                  <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-generated-${article.id}` ? 'check_circle' : 'content_paste'}</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(article.id)}
+                                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                                  title="削除"
+                                >
+                                  <span className="material-symbols-outlined text-xl">delete</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          {/* Date Tag Row */}
+                          {dateTagMap.has(article.post_id) && (
+                            <tr
+                              className="bg-amber-100 dark:bg-amber-900/20 border-l-4 border-amber-400 cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-900/40 transition-colors"
+                              onClick={() => {
+                                setEditingDateId(article.post_id);
+                                setEditingDate(dateTagMap.get(article.post_id) || '');
+                              }}
+                            >
+                              <td className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 w-16">
+                                <span className="font-bold text-slate-300">#{index + 1}</span>
+                              </td>
+                              <td colSpan={2} className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300">
+                                <div className="flex items-center gap-2">
+                                  <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                  {dateTagMap.get(article.post_id)}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {unreadArticles.map((article, index) => (
+                    <div key={article.id} className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 p-4">
+                      {/* Inline Edit for Title */}
+                      {editingTitleId === article.id && (
+                        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-green-700 uppercase">タイトル編集</span>
+                            <input
+                              type="text"
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleUpdateTitle(article.id, editingTitle);
+                                }
+                              }}
+                              className="flex-1 rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
+                              placeholder="新しいタイトルを入力"
+                            />
+                            <button onClick={() => handleUpdateTitle(article.id, editingTitle)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
+                            <button onClick={() => setEditingTitleId(null)} className="text-slate-400 text-xs font-bold hover:text-slate-600">閉じる</button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Inline Edit for Date */}
+                      {editingDateId === article.post_id && (
+                        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/10 rounded-lg border border-amber-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-amber-700 uppercase">日付設定</span>
+                            <input
+                              type="date"
+                              value={editingDate}
+                              onChange={(e) => setEditingDate(e.target.value)}
+                              className="rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
+                            />
+                            <button onClick={() => handleUpdateDate(article.post_id, editingDate)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
+                            <button onClick={() => handleDeleteDate(article.post_id)} className="bg-red-50 text-red-600 px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-red-100">タグ削除</button>
+                            <button onClick={() => setEditingDateId(null)} className="text-slate-400 text-xs font-bold hover:text-slate-600">閉じる</button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Article Card */}
+                      <div className="flex items-start gap-3">
                         <input
                           type="checkbox"
+                          checked={selectedIds.has(article.id)}
                           onChange={(e) => {
-                            if (e.target.checked) setSelectedIds(new Set(unreadArticles.map(a => a.id)));
-                            else setSelectedIds(new Set());
+                            const newSelected = new Set(selectedIds);
+                            if (e.target.checked) newSelected.add(article.id);
+                            else newSelected.delete(article.id);
+                            setSelectedIds(newSelected);
                           }}
-                          className="h-4 w-4 rounded border-slate-300 text-[#135bec]"
+                          className="mt-1 h-4 w-4 rounded border-slate-300 text-[#135bec]"
                         />
-                      </th>
-                      <th className="px-6 py-3 font-semibold">元記事情報 / 生成タイトル</th>
-                      <th className="px-6 py-3 font-semibold text-right">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                    {unreadArticles.map((article, index) => (
-                      <React.Fragment key={article.id}>
-                        {/* Inline Edit for Title */}
-                        {editingTitleId === article.id && (
-                          <tr className="bg-green-50 dark:bg-green-900/10">
-                            <td colSpan={3} className="p-4">
-                              <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-green-200">
-                                <span className="text-xs font-bold text-green-700 uppercase">タイトル編集</span>
-                                <input
-                                  type="text"
-                                  value={editingTitle}
-                                  onChange={(e) => setEditingTitle(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleUpdateTitle(article.id, editingTitle);
-                                    }
-                                  }}
-                                  className="flex-1 rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
-                                  placeholder="新しいタイトルを入力"
-                                />
-                                <button onClick={() => handleUpdateTitle(article.id, editingTitle)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
-                                <button onClick={() => setEditingTitleId(null)} className="text-slate-400 text-xs font-bold ml-auto hover:text-slate-600">閉じる</button>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="mb-2 text-xs text-slate-400 flex items-center gap-2">
+                            <span className="font-bold text-slate-300">#{index + 1}</span>
+                            <a href={article.url} target="_blank" rel="noreferrer" className="hover:text-[#135bec] truncate">{article.url}</a>
+                          </div>
+                          <div className="font-medium text-slate-900 dark:text-white leading-tight mb-2">
+                            {article.originalTitle}
+                          </div>
+                          <div className={`p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg font-bold border border-slate-100 dark:border-slate-700 mb-3 ${article.generatedTitle ? (article.generatedTitle !== article.originalTitle ? 'text-green-600' : 'text-slate-500') : 'text-[#135bec]'}`}>
+                            {article.generatedTitle || "※ AI未生成"}
+                            {article.generatedTitle && (
+                              <button
+                                onClick={(e) => {
+                                  setEditingTitleId(article.id);
+                                  setEditingTitle(article.generatedTitle!);
+                                }}
+                                className="ml-2 text-xs text-slate-400 hover:text-slate-600"
+                                title="タイトル編集"
+                              >
+                                <span className="material-symbols-outlined text-base">edit</span>
+                              </button>
+                            )}
+                          </div>
 
-                        {/* Inline Edit for Date */}
-                        {editingDateId === article.post_id && (
-                          <tr className="bg-amber-50 dark:bg-amber-900/10">
-                            <td colSpan={3} className="p-4">
-                              <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-amber-200">
-                                <span className="text-xs font-bold text-amber-700 uppercase">日付設定</span>
-                                <input
-                                  type="date"
-                                  value={editingDate}
-                                  onChange={(e) => setEditingDate(e.target.value)}
-                                  className="rounded-lg border-slate-200 bg-white dark:bg-slate-700 text-sm px-3 py-1.5 focus:ring-[#135bec]"
-                                />
-                                <button onClick={() => handleUpdateDate(article.post_id, editingDate)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700">保存</button>
-                                <button onClick={() => handleDeleteDate(article.post_id)} className="bg-red-50 text-red-600 px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-red-100">タグ削除</button>
-                                <button onClick={() => setEditingDateId(null)} className="text-slate-400 text-xs font-bold ml-auto hover:text-slate-600">閉じる</button>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-
-                        {/* Article Row */}
-                        <tr
-                          className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
-                          onClick={(event) => handleRowClick(article.id, index, event)}
-                        >
-                          <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                            <input
-                              type="checkbox"
-                              checked={selectedIds.has(article.id)}
-                              onChange={(e) => {
-                                const newSelected = new Set(selectedIds);
-                                if (e.target.checked) newSelected.add(article.id);
-                                else newSelected.delete(article.id);
-                                setSelectedIds(newSelected);
-                              }}
-                              className="h-4 w-4 rounded border-slate-300 text-[#135bec]"
-                            />
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="mb-1 text-xs text-slate-400 flex items-center gap-2">
-                              <span className="font-bold text-slate-300">#{index + 1}</span>
-                              <a href={article.url} target="_blank" rel="noreferrer" className="hover:text-[#135bec] truncate max-w-xs">{article.url}</a>
-                            </div>
-                            <div className="font-medium text-slate-900 dark:text-white leading-tight mb-2">
-                              {article.originalTitle}
-                            </div>
-                            <div className={`p-2 bg-slate-50 dark:bg-slate-800/80 rounded-lg font-bold border border-slate-100 dark:border-slate-700 ${article.generatedTitle ? (article.generatedTitle !== article.originalTitle ? 'text-green-600' : 'text-slate-500') : 'text-[#135bec]'}`}>
-                              {article.generatedTitle || "※ AI未生成"}
-                              {article.generatedTitle && (
+                          {/* Date Tag */}
+                          {dateTagMap.has(article.post_id) && (
+                            <div className="mb-3 p-2 bg-amber-100 dark:bg-amber-900/20 border-l-4 border-amber-400 rounded-r-lg">
+                              <div className="flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-300">
+                                <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                {dateTagMap.get(article.post_id)}
                                 <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingTitleId(article.id);
-                                    setEditingTitle(article.generatedTitle!);
+                                  onClick={() => {
+                                    setEditingDateId(article.post_id);
+                                    setEditingDate(dateTagMap.get(article.post_id) || '');
                                   }}
-                                  className="ml-2 text-xs text-slate-400 hover:text-slate-600"
-                                  title="タイトル編集"
+                                  className="ml-auto text-amber-600 hover:text-amber-800"
                                 >
-                                  <span className="material-symbols-outlined text-base">edit</span>
+                                  <span className="material-symbols-outlined text-sm">edit</span>
                                 </button>
-                              )}
+                              </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-1">
+                          )}
+
+                          {/* Action Buttons */}
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleGenerateTitle(article.id)}
                                 disabled={generatingId === article.id}
                                 className={`p-2 rounded-lg ${generatingId === article.id ? 'animate-spin text-slate-300' : article.generatedTitle ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-[#135bec] hover:bg-[#135bec]/10'}`}
                                 title={article.generatedTitle ? "AIタイトル再生成" : "AIタイトル生成"}
                               >
-                                <span className="material-symbols-outlined text-xl">{article.generatedTitle ? 'auto_fix_high' : 'auto_fix_high'}</span>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setEditingDateId(article.post_id);
-                                  setEditingDate(dateTagMap.get(article.post_id) || '');
-                                }}
-                                className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-                                title="日付タグ設定"
-                              >
-                                <span className="material-symbols-outlined text-xl">{copiedButtonId === `date-${article.post_id}` ? 'check_circle' : 'bookmark'}</span>
+                                <span className="material-symbols-outlined text-lg">{article.generatedTitle ? 'auto_fix_high' : 'auto_fix_high'}</span>
                               </button>
                               <button
                                 onClick={() => handleCopy(article.originalTitle, `copy-original-${article.id}`)}
                                 className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                                 title="オリジナルタイトルをコピー"
                               >
-                                <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-original-${article.id}` ? 'check_circle' : 'content_copy'}</span>
+                                <span className="material-symbols-outlined text-base">{copiedButtonId === `copy-original-${article.id}` ? 'check_circle' : 'content_copy'}</span>
                               </button>
                               <button
                                 onClick={() => handleCopy(article.generatedTitle || article.originalTitle, `copy-generated-${article.id}`)}
@@ -605,45 +770,23 @@ export default function MangaTable() {
                                 title={article.generatedTitle ? "生成タイトルをコピー" : "生成タイトルなし"}
                                 disabled={!article.generatedTitle}
                               >
-                                <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-generated-${article.id}` ? 'check_circle' : 'content_paste'}</span>
-                              </button>
-                              <button
-                                onClick={() => handleDelete(article.id)}
-                                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                                title="削除"
-                              >
-                                <span className="material-symbols-outlined text-xl">delete</span>
+                                <span className="material-symbols-outlined text-base">{copiedButtonId === `copy-generated-${article.id}` ? 'check_circle' : 'content_paste'}</span>
                               </button>
                             </div>
-                          </td>
-                        </tr>
-
-                        {/* Date Tag Row */}
-                        {dateTagMap.has(article.post_id) && (
-                          <tr
-                            className="bg-amber-100 dark:bg-amber-900/20 border-l-4 border-amber-400 cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-900/40 transition-colors"
-                            onClick={() => {
-                              setEditingDateId(article.post_id);
-                              setEditingDate(dateTagMap.get(article.post_id) || '');
-                            }}
-                          >
-                            <td className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 w-16">
-                              <span className="font-bold text-slate-300">#{index + 1}</span>
-                            </td>
-                            <td colSpan={2} className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300">
-                              <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">calendar_month</span>
-                                {dateTagMap.get(article.post_id)}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </table>
+                            <button
+                              onClick={() => handleDelete(article.id)}
+                              className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                              title="削除"
+                            >
+                              <span className="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
             </section>
           </div>
         </div>

@@ -102,8 +102,8 @@ export default function AnimeTable() {
               </div>
             </section>
 
-            {/* Table */}
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+            {/* Desktop Table */}
+            <div className="hidden md:block rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
@@ -140,6 +140,34 @@ export default function AnimeTable() {
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {articles.map((article, index) => (
+                <div key={article.id} className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-slate-400 font-bold text-sm">#{index + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-slate-900 dark:text-white leading-tight mb-2">
+                        {article.title}
+                      </div>
+                      <a href={article.url} target="_blank" rel="noreferrer" className="text-[#135bec] hover:underline text-sm block mb-2 break-all">
+                        {article.url}
+                      </a>
+                      <div className="text-xs text-slate-500">
+                        {new Date(article.createdAt).toLocaleString('ja-JP', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
