@@ -40,11 +40,13 @@ export default function MangaTable() {
   const [generatingId, setGeneratingId] = useState<number | null>(null);
   const [editingTitleId, setEditingTitleId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [bulkDate, setBulkDate] = useState('');
+  const [copiedButtonId, setCopiedButtonId] = useState<string | null>(null);
 
   // --- API Functions ---
   const fetchArticles = async () => {
     try {
-      const response = await fetch('/api/scrape/manga?all=true');
+      const response = await fetch('/api/manga_articles?all=true');
       const data = await response.json();
       if (data.success) {
         setArticles(data.articles);
@@ -82,10 +84,11 @@ export default function MangaTable() {
     }
   };
 
-  const handleCopy = async (text: string) => {
+  const handleCopy = async (text: string, buttonId: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      // alert() の代わりになる通知UIが理想的ですが、ロジック維持のため残します
+      setCopiedButtonId(buttonId);
+      setTimeout(() => setCopiedButtonId(null), 1500);
     } catch (error) {
       console.error('Failed to copy');
     }
@@ -137,6 +140,8 @@ export default function MangaTable() {
         await fetchDateTags();
         setEditingDateId(null);
         setEditingDate('');
+        setCopiedButtonId(`date-${postId}`);
+        setTimeout(() => setCopiedButtonId(null), 1500);
       }
     } catch (error) {
       console.error('Update date error:', error);
@@ -280,6 +285,25 @@ export default function MangaTable() {
     setSelectedIds(new Set());
   };
 
+  const handleBulkSetDate = async () => {
+    if (selectedIds.size === 0 || !bulkDate) return;
+    if (!window.confirm(`${selectedIds.size}件の記事に日付「${bulkDate}」を設定しますか？`)) return;
+
+    const selectedArticles = unreadArticles.filter(article => selectedIds.has(article.id));
+    let successCount = 0;
+    for (const article of selectedArticles) {
+      try {
+        await handleUpdateDate(article.post_id, bulkDate);
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to set date for ${article.id}:`, error);
+      }
+    }
+    alert(`${successCount}件の日付設定が完了しました。`);
+    setSelectedIds(new Set());
+    setBulkDate('');
+  };
+
   const handleRowClick = (articleId: number, index: number, event: React.MouseEvent) => {
     const isShift = event.shiftKey;
     const isMeta = event.metaKey || event.ctrlKey;
@@ -329,19 +353,28 @@ export default function MangaTable() {
   const unreadArticles = articles.filter(article => !article.checked);
 
   return (
-    <div className="flex min-h-screen w-full bg-[#f6f6f8] dark:bg-[#101622] font-sans">
+    <div className="flex min-h-screen w-full bg-slate-50 dark:bg-slate-950 font-sans">
       <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
       {/* Sidebar */}
       <Sidebar currentPage="manga" />
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 dark:border-slate-800">
+      <main className="flex-1 md:ml-96 flex flex-col min-h-screen">
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between bg-white dark:bg-slate-900 px-8 border-b border-slate-200 dark:border-slate-800">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">漫画まとめ速報 管理</h2>
           <div className="flex items-center gap-2">
             {selectedIds.size > 0 && (
               <div className="flex items-center gap-2 mr-4 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={bulkDate}
+                    onChange={(e) => setBulkDate(e.target.value)}
+                    className="px-2 py-1 text-xs border rounded"
+                  />
+                  <button onClick={handleBulkSetDate} className="px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all">一括日付設定 ({selectedIds.size})</button>
+                </div>
                 <button onClick={handleCopySelectedUrls} className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all">URLコピー</button>
                 <button onClick={handleCopySelectedOriginalTitles} className="px-3 py-1.5 text-xs font-bold text-purple-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all">オリジナルコピー</button>
                 <button onClick={handleBulkGenerateTitles} className="px-3 py-1.5 text-xs font-bold text-green-600 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all">AI一括生成 ({selectedIds.size})</button>
@@ -360,28 +393,76 @@ export default function MangaTable() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="mx-auto max-w-7xl flex flex-col gap-6">
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="mx-auto max-w-7xl flex flex-col gap-8">
 
-            {/* Stats */}
-            <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <p className="text-sm font-medium text-slate-500">未処理の記事</p>
-                <h3 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{unreadArticles.length}</h3>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <p className="text-sm font-medium text-slate-500">日付タグ数</p>
-                <h3 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{dateTags.length}</h3>
-              </div>
-              <div className="flex items-center">
-                <button onClick={handleBulkDelete} className="w-full py-4 text-red-500 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors">
-                  全記事一括削除
-                </button>
+            <section className="flex flex-col gap-6 p-8 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                <span className="material-symbols-outlined text-blue-500 text-3xl">download</span>
+                新しい記事をスクレイピング
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="rounded-xl bg-blue-500/10 p-6 shadow-sm border border-blue-500/20 dark:border-blue-500/50 dark:bg-blue-500/10 flex flex-col items-center justify-center text-center">
+                  <span className="material-symbols-outlined text-blue-500 text-5xl mb-3">article</span>
+                  <p className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-2">未処理の記事</p>
+                  <h3 className="text-5xl font-extrabold text-blue-500">{unreadArticles.length}</h3>
+                </div>
+                <div className="rounded-xl bg-emerald-500/10 p-6 shadow-sm border border-emerald-500/20 dark:border-emerald-500/50 dark:bg-emerald-500/10 flex flex-col items-center justify-center text-center">
+                  <span className="material-symbols-outlined text-emerald-500 text-5xl mb-3">bookmark_add</span>
+                  <p className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-2">日付タグ数</p>
+                  <h3 className="text-5xl font-extrabold text-emerald-500">{dateTags.length}</h3>
+                </div>
               </div>
             </section>
 
-            {/* Table */}
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+            <section className="flex flex-col gap-6 p-8 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                <span className="material-symbols-outlined text-emerald-500 text-3xl">rate_review</span>
+                記事を確認・編集する
+              </h3>
+              <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 px-6 py-4 rounded-t-lg border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (e.target.checked) setSelectedIds(new Set(unreadArticles.map(a => a.id)));
+                      else setSelectedIds(new Set());
+                    }}
+                    className="h-5 w-5 rounded border-slate-300 text-blue-500"
+                  />
+                  <span className="text-sm font-bold text-slate-600 dark:text-slate-300">すべて選択 / 元記事情報と生成タイトル</span>
+                </div>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={handleCopySelectedUrls}
+                    className={`text-sm font-medium ${selectedIds.size > 0 ? 'text-slate-600 hover:text-slate-700' : 'text-slate-400 cursor-not-allowed'}`}
+                    disabled={selectedIds.size === 0}
+                  >
+                    <span className="material-symbols-outlined align-middle text-lg mr-1">link</span>
+                    URLコピー
+                  </button>
+                  <button
+                    onClick={handleCopySelectedOriginalTitles}
+                    className={`text-sm font-medium ${selectedIds.size > 0 ? 'text-slate-600 hover:text-slate-700' : 'text-slate-400 cursor-not-allowed'}`}
+                    disabled={selectedIds.size === 0}
+                  >
+                    <span className="material-symbols-outlined align-middle text-lg mr-1">description</span>
+                    タイトルコピー
+                  </button>
+                  <button onClick={handleBulkGenerateTitles} className={`text-sm font-medium ${selectedIds.size > 0 ? 'text-emerald-600 hover:text-emerald-700' : 'text-slate-400 cursor-not-allowed'}`} disabled={selectedIds.size === 0}>
+                    <span className="material-symbols-outlined align-middle text-lg mr-1">auto_fix_high</span>
+                    AI生成 ({selectedIds.size})
+                  </button>
+                  <button onClick={handleDeleteSelected} className={`text-sm font-medium ${selectedIds.size > 0 ? 'text-red-600 hover:text-red-700' : 'text-slate-400 cursor-not-allowed'}`} disabled={selectedIds.size === 0}>
+                    <span className="material-symbols-outlined align-middle text-lg mr-1">remove_circle</span>
+                    選択した記事を削除
+                  </button>
+                  <button onClick={() => setSelectedIds(new Set())} className={`text-sm font-medium ${selectedIds.size > 0 ? 'text-slate-600 hover:text-slate-700' : 'text-slate-400 cursor-not-allowed'}`} disabled={selectedIds.size === 0}>
+                    選択解除
+                  </button>
+                </div>
+              </div>
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
@@ -448,18 +529,6 @@ export default function MangaTable() {
                           </tr>
                         )}
 
-                        {/* Date Tag Row */}
-                        {dateTagMap.has(article.post_id) && (
-                          <tr className="bg-amber-100 dark:bg-amber-900/20 border-l-4 border-amber-400">
-                            <td colSpan={3} className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300">
-                              <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">calendar_month</span>
-                                {dateTagMap.get(article.post_id)}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-
                         {/* Article Row */}
                         <tr
                           className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
@@ -490,7 +559,8 @@ export default function MangaTable() {
                               {article.generatedTitle || "※ AI未生成"}
                               {article.generatedTitle && (
                                 <button
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setEditingTitleId(article.id);
                                     setEditingTitle(article.generatedTitle!);
                                   }}
@@ -502,7 +572,7 @@ export default function MangaTable() {
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end gap-1">
                               <button
                                 onClick={() => handleGenerateTitle(article.id)}
@@ -520,22 +590,22 @@ export default function MangaTable() {
                                 className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                                 title="日付タグ設定"
                               >
-                                <span className="material-symbols-outlined text-xl">bookmark</span>
+                                <span className="material-symbols-outlined text-xl">{copiedButtonId === `date-${article.post_id}` ? 'check_circle' : 'bookmark'}</span>
                               </button>
                               <button
-                                onClick={() => handleCopy(article.originalTitle)}
+                                onClick={() => handleCopy(article.originalTitle, `copy-original-${article.id}`)}
                                 className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
                                 title="オリジナルタイトルをコピー"
                               >
-                                <span className="material-symbols-outlined text-lg">content_copy</span>
+                                <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-original-${article.id}` ? 'check_circle' : 'content_copy'}</span>
                               </button>
                               <button
-                                onClick={() => handleCopy(article.generatedTitle || article.originalTitle)}
+                                onClick={() => handleCopy(article.generatedTitle || article.originalTitle, `copy-generated-${article.id}`)}
                                 className={`p-2 rounded-lg ${article.generatedTitle ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-slate-300 cursor-not-allowed'}`}
                                 title={article.generatedTitle ? "生成タイトルをコピー" : "生成タイトルなし"}
                                 disabled={!article.generatedTitle}
                               >
-                                <span className="material-symbols-outlined text-lg">content_paste</span>
+                                <span className="material-symbols-outlined text-lg">{copiedButtonId === `copy-generated-${article.id}` ? 'check_circle' : 'content_paste'}</span>
                               </button>
                               <button
                                 onClick={() => handleDelete(article.id)}
@@ -547,12 +617,34 @@ export default function MangaTable() {
                             </div>
                           </td>
                         </tr>
+
+                        {/* Date Tag Row */}
+                        {dateTagMap.has(article.post_id) && (
+                          <tr
+                            className="bg-amber-100 dark:bg-amber-900/20 border-l-4 border-amber-400 cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-900/40 transition-colors"
+                            onClick={() => {
+                              setEditingDateId(article.post_id);
+                              setEditingDate(dateTagMap.get(article.post_id) || '');
+                            }}
+                          >
+                            <td className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 w-16">
+                              <span className="font-bold text-slate-300">#{index + 1}</span>
+                            </td>
+                            <td colSpan={2} className="px-6 py-2 text-xs font-bold text-amber-700 dark:text-amber-300">
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                {dateTagMap.get(article.post_id)}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                       </React.Fragment>
                     ))}
                   </tbody>
                 </table>
               </div>
             </div>
+            </section>
           </div>
         </div>
       </main>

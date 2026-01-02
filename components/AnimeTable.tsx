@@ -71,7 +71,7 @@ export default function AnimeTable() {
       <Sidebar currentPage="anime" />
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-96 flex flex-col min-h-screen">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 dark:border-slate-800">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">アニメまとめCH 管理</h2>
           <div className="flex items-center gap-2">
